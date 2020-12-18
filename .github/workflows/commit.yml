@@ -1,17 +1,34 @@
-name: 'build-test'
+name: Test action
+
 on:
   pull_request:
-  push:
-    branches:
-      - "main"
+    branches: 
+      - master
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test_action:
+    name: Test Action
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
     steps:
-      - uses: actions/checkout@v2
-      - run: npm ci
-      - uses: ./
-        with:
-          file-names: '["package.json", "word.txt"]'
-          github-token: ${{ secrets.NEW_GITHUB_ACTIONS_TOKEN }}
+      - name: Checkout code
+        uses: actions/checkout@v2
+      
+      - name: Get the latest commit on PR
+        id: get-latest-commit
+        uses: ./
+
+      - name: print the info of the latest commit
+        shell: bash
+        run: |
+          echo "The latest_commit_message:"
+          echo "${{ steps.get-latest-commit.outputs.latest_commit_message }}"
+          echo "The latest_commit_sha:"
+          echo "${{ steps.get-latest-commit.outputs.latest_commit_sha }}"
+          echo "The latest_commit_context:"
+          echo "${{ steps.get-latest-commit.outputs.latest_commit_context }}"
+      - name: print the latest_commit_context
+        run: cat ${{ steps.get-latest-commit.outputs.latest_commit_context }}
