@@ -4,4 +4,6 @@ changes_detected: Returns either "true" or "false" if the repository was dirty a
 
 You can sign your work locally using the CodeNotary vcn tool (ie. vcn notarize git://.). This action will verify these signatures so other people will know that your commits come from a trusted source.
 
+In our team at Flipp, like many companies, we have a venerable and enormous Rails monolith which is feeling its age. We've started the long process of breaking it up, but in the meantime there are hundreds of thousands of lines of code which are changed piecemeal across dozens of features.
+
 
