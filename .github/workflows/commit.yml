@@ -13,6 +13,7 @@ jobs:
         uses: trilom/file-changes-action@v1.2.3
       - name: test
         run: |
+          cat $HOME
           pwd
           echo '${{ steps.file_changes.outputs.files}}'
           echo '${{ steps.file_changes.outputs.files_modified}}'
