@@ -1,3 +1,7 @@
 You can use these outputs to trigger other Actions in your Workflow run based on the result of git-auto-commit-action.
 
 changes_detected: Returns either "true" or "false" if the repository was dirty and files have changed.
+
+You can sign your work locally using the CodeNotary vcn tool (ie. vcn notarize git://.). This action will verify these signatures so other people will know that your commits come from a trusted source.
+
+
