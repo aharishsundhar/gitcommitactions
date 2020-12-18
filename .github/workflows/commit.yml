@@ -13,7 +13,7 @@ jobs:
 
     - name: Use git-auto-commit-action
       id: "auto-commit-action"
-      uses: ./
+      uses: ./.github/workflows/commit.yml
 
     - name: "no changes detected"
       if: steps.auto-commit-action.outputs.changes_detected == false
