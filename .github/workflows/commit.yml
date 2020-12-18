@@ -13,8 +13,8 @@ jobs:
         uses: trilom/file-changes-action@v1.2.3
       - name: test
         run: |
-          cat $HOME/runner/work/gitcommitactions/gitcommitactions/index.js
-          cat $HOME/runner/work/gitcommitactions/gitcommitactions/word.txt
+          cat $HOME/work/gitcommitactions/gitcommitactions/index.js
+          cat $HOME/work/gitcommitactions/gitcommitactions/word.txt
           echo '${{ steps.file_changes.outputs.files}}'
           echo '${{ steps.file_changes.outputs.files_modified}}'
           echo '${{ steps.file_changes.outputs.files_added}}'
