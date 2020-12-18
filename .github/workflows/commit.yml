@@ -1,24 +1,25 @@
-name: git-auto-commit
-
-on: 
-  push:
-    branches: [ main ]
+name: Use a different repository directory
+on: push
 
 jobs:
-  git-auto-commit:
+  run:
+    name: Add a text file
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      # If you need to, you can check out your repo to a different location
+      - uses: actions/checkout@v2
+        with:
+          path: './gitcommitactions/'
 
-    - name: Use git-auto-commit-action
-      id: "auto-commit-action"
-      uses: ./
+      # You can make whatever type of change to the repo...
+      - run: echo "123" > ./gitcommitactions/word.txt
 
-    - name: "no changes detected"
-      if: steps.auto-commit-action.outputs.changes_detected == false
-      run: "echo \"No changes detected\""
-
-    - name: "changes detected"
-      if: steps.auto-commit-action.outputs.changes_detected == true
-      run: "echo \"Changes detected\""
+      # ...and then use the action as you would normally do, but providing the path to the repo
+      - uses: EndBug/add-and-commit@v5
+        with:
+          message: 'Add the very useful text file'
+          add: '*.txt --force'
+          cwd: './gitcommitactions/'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
