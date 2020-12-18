@@ -22,4 +22,4 @@ jobs:
           add: '*.txt --force'
           cwd: './gitcommitactions/'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.NEW_GITHUB_ACTIONS_TOKEN }}
