@@ -13,9 +13,6 @@ jobs:
         uses: trilom/file-changes-action@v1.2.3
       - name: test
         run: |
-          ls
-          cd /home/runner/work/gitcommitactions/gitcommitactions
-          ls
           echo '${{ steps.file_changes.outputs.files}}'
           echo '${{ steps.file_changes.outputs.files_modified}}'
           echo '${{ steps.file_changes.outputs.files_added}}'
