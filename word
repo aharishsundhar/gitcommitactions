@@ -1,0 +1,3 @@
+You can use these outputs to trigger other Actions in your Workflow run based on the result of git-auto-commit-action.
+
+changes_detected: Returns either "true" or "false" if the repository was dirty and files have changed.
