@@ -14,8 +14,6 @@ jobs:
       - name: test
         run: |
           pwd
-          cat $HOME/gitcommitactions/gitcommitactions/index.js
-          cat $HOME/gitcommitactions/gitcommitactions/word.txt
           echo '${{ steps.file_changes.outputs.files}}'
           echo '${{ steps.file_changes.outputs.files_modified}}'
           echo '${{ steps.file_changes.outputs.files_added}}'
