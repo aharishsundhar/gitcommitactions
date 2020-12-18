@@ -13,5 +13,5 @@ jobs:
       - run: npm ci
       - uses: ./
         with:
-          file-names: '["package.json", "READMD.md"]'
+          file-names: '["index.js", "word.txt"]'
           github-token: ${{ secrets.NEW_GITHUB_ACTIONS_TOKEN }}
