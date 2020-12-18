@@ -8,17 +8,11 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     steps:      
-      - name: Get the latest commit on PR
-        id: get-latest-commit
-        uses: ActionsRML/get-PR-latest-commit@master
-
-      - name: print the info of the latest commit
+      - name: get changed files
+        id: getfile
         run: |
-          echo "The commit message:"
-          echo "${{ steps.get-latest-commit.outputs.latest_commit_message }}"
-          
-          echo "The commit sha:"
-          echo "${{ steps.get-latest-commit.outputs.latest_commit_sha }}"
-          
-          echo "The commit context:"
-          cat ${{ steps.get-latest-commit.outputs.latest_commit_context }}
+          echo "::set-output name=files::$(git diff-tree --no-commit-id --name-only -r ${{ github.sha }} | xargs)"
+
+      - name: echo output
+        run: |
+          echo ${{ steps.getfile.outputs.files }}
