@@ -34,4 +34,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
-        run: echo ${{ steps.diff.outputs.diff }}
+        run: echo ${{ needs.job1.outputs.run_rest_jobs }}
