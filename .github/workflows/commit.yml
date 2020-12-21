@@ -8,7 +8,7 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     outputs: 
-          run_rest_jobs: echo "${{ steps.diff.outputs.diff }}"
+          run_rest_jobs: ${{ steps.diff.outputs.diff }}
     steps:
       - uses: actions/checkout@v2
       - name: Check for changes
@@ -31,8 +31,7 @@ jobs:
   job2:
     name: Job2
     needs: [job1]
-    if: needs.job01.outputs.run_rest_jobs == 'applications/clients/app/index.html'
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
-        run: echo "run the rest jobs"
+        run: echo ${{ steps.diff.outputs.diff }}
