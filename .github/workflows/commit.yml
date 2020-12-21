@@ -31,7 +31,7 @@ jobs:
   job2:
     name: Job2
     needs: [job1]
-    if: needs.job01.outputs.run_rest_jobs == 'application/client/app/'
+    if: needs.job01.outputs.run_rest_jobs == 'application/client/app/index.html'
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
