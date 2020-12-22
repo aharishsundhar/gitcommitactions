@@ -1,17 +1,14 @@
-You can use these outputs to trigger other Actions in your Workflow run based on the result of git-auto-commit-action.
-
-changes_detected: Returns either "true" or "false" if the repository was dirty and files have changed.
-
-You can sign your work locally using the CodeNotary vcn tool (ie. vcn notarize git://.). This action will verify these signatures so other people will know that your commits come from a trusted source.
-
-In our team at Flipp, like many companies, we have a venerable and enormous Rails monolith which is feeling its age. We've started the long process of breaking it up, but in the meantime there are hundreds of thousands of lines of code which are changed piecemeal across dozens of features.
-
-to required file on same due manage testing8
-on: [push, pull_request]
-
+name: 'Commit Message Check'
+on:
+  
+  push:
+    branches:
+      - main
 jobs:
   job1:
     runs-on: ubuntu-latest
+    outputs: 
+          run_rest_jobs: ${{ steps.diff.outputs.diff }}
     steps:
       - uses: actions/checkout@v2
       - name: Check for changes
@@ -31,5 +28,11 @@ jobs:
           echo "$DIFF"
           # Escape newlines (replace \n with %0A)
           echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
-      - run: echo "${{ steps.diff.outputs.diff }}"
-
+  job2:
+    name: Job2
+    needs: [job1]
+    if: contains( needs.job1.outputs.run_rest_jobs, 'applications/clients/app/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: the rest jobs
+        run: echo ${{ needs.job1.outputs.run_rest_jobs }}

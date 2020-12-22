@@ -5,34 +5,41 @@ on:
     branches:
       - main
 jobs:
-  job1:
+  check:
+    name: Check changed files
+    outputs:
+      run_job: ${{ steps.check_files.outputs.run_job }}
     runs-on: ubuntu-latest
-    outputs: 
-          run_rest_jobs: ${{ steps.diff.outputs.diff }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Check for changes
-        id: diff
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: check files
+        id: check_files
         run: |
-          if [ $GITHUB_BASE_REF ]; then
-            # Pull Request
-            git fetch origin $GITHUB_BASE_REF --depth=1
-            export DIFF=$( git diff --name-only origin/$GITHUB_BASE_REF $GITHUB_SHA )
-            echo "Diff between origin/$GITHUB_BASE_REF and $GITHUB_SHA"
-          else
-            # Push
-            git fetch origin ${{ github.event.before }} --depth=1
-            export DIFF=$( git diff --name-only ${{ github.event.before }} $GITHUB_SHA )
-            echo "Diff between ${{ github.event.before }} and $GITHUB_SHA"
-          fi
-          echo "$DIFF"
-          # Escape newlines (replace \n with %0A)
-          echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
-  job2:
-    name: Job2
-    needs: [job1]
-    if: contains( needs.job1.outputs.run_rest_jobs, 'applications/clients/app/')
+          echo "=============== list changed files ==============="
+          git diff --name-only HEAD^ HEAD
+          
+          echo "========== check paths of changed files =========="
+          git diff --name-only HEAD^ HEAD > files.txt
+          while IFS= read -r file
+          do
+            echo $file
+            if [[ $file != "applications/clients/app"* ]]; then
+              echo "This file is not under the directory 'applications/clients/app'."
+              echo "::set-output name=run_job::false"
+              break
+            else
+              echo "::set-output name=run_job::true"
+            fi
+          done < files.txt
+  job_for_env1:
+    name: Job for env1
+    needs: check
+    if: needs.check.outputs.run_job == 'true'
     runs-on: ubuntu-latest
     steps:
-      - name: the rest jobs
-        run: echo ${{ needs.job1.outputs.run_rest_jobs }}
+      - name: run for env1
+        run: echo "Updates made to env1"
