@@ -28,6 +28,23 @@ jobs:
           echo "$DIFF"
           # Escape newlines (replace \n with %0A)
           echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
+      - name: Set matrix for build
+        id: set-matrix
+        run: |
+          DIFF="${{ steps.diff.outputs.diff }}"
+          
+          # Loop by lines
+          while read path; do
+            # Set $directory to substring before /
+            directory="$( echo $path | cut -d'/' -f1 -s )"
+
+            if [ -z "$directory" ]; then
+              continue # Exclude root directory
+            elif [ "$directory" == docs ]; then
+              continue # Exclude docs directory
+            elif [ "$path" == *.rst ]; then
+              continue # Exclude *.rst files
+            fi
   job2:
     name: Job2
     needs: [job1]
