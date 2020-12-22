@@ -4,6 +4,7 @@ this command to check file          commit change file options
 
 Previous answer (by @pozil) fetches full repository and it may be slow on big repositories. My solution is to fetch with depth 1 by using actions/checkout and fetch later manually. Also my solution works for both Pull Requests and normal pushes to branches.
 
+testing 8
 
 on: [push, pull_request]
 
