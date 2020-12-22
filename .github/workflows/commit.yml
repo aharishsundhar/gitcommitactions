@@ -8,7 +8,7 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     outputs: 
-          run_rest_jobs: ${{ steps.set-matrix. }}
+          run_rest_jobs: ${{ steps.set-matrix.outputs.diff }}
     steps:
       - uses: actions/checkout@v2
       - name: Check for changes
