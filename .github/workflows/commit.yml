@@ -8,7 +8,7 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     outputs: 
-          run_rest_jobs: ${{ steps.diff.outputs.diff }}
+          run_rest_jobs: ${{ steps.set-matrix. }}
     steps:
       - uses: actions/checkout@v2
       - name: Check for changes
@@ -32,23 +32,21 @@ jobs:
         id: set-matrix
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
-          
+
           # Loop by lines
           while read path; do
-            # Set $directory to substring before /
             directory="$( echo $path | cut -d'/' -f1 -s )"
 
-            if [ -z "$directory" ]; then
-              continue # Exclude root directory
-            elif [ "$directory" == docs ]; then
-              continue # Exclude docs directory
-            elif [ "$path" == *.rst ]; then
-              continue # Exclude *.rst files
+            if [ -z "$directory" == "applications/clients/app/" ]; then
+              echo "::set-output name=diff::commited"
+              continue 
+            else
+              echo "::set-output name=diff::notcommited"
             fi
   job2:
     name: Job2
     needs: [job1]
-    if: contains( needs.job1.outputs.run_rest_jobs, 'applications/clients/app/')
+    if: needs.job1.outputs.run_rest_jobs == 'commited'
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
