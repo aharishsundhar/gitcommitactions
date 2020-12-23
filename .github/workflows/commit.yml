@@ -35,7 +35,7 @@ jobs:
           while read path;
           do
             directory="$( echo $path | cut -d'/' -f1 -s )"
-            if [ -z "$directory" == "applications" ]; then
+            if [[ $directory == applications ]]; then
               echo "::set-output name=diffs::commited"
               continue 
             else
