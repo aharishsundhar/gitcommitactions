@@ -32,11 +32,12 @@ jobs:
         id: set-matrix
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
-          while read -r path;
+          while read path;
           do
             directory="$( echo $path )"
-            if [[ $directory == applications/clients/app/* ]]; then
+            if [[ -z "$directory" == "applications/clients/app/"* ]]; then
               echo "::set-output name=diffs::commited" 
+              break
             else
               echo "::set-output name=diffs::notcommited"
             fi
