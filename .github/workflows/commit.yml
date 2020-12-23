@@ -34,7 +34,7 @@ jobs:
           DIFF="${{ steps.diff.outputs.diff }}"
           while read path;
           do
-            directory="$( echo $path | cut -d'/' -f1 -s )"
+            directory="$( echo $path | -f1 -s )"
             if [[ "$directory" == "applications/clients/app/" ]]; then
               echo "::set-output name=diffs::commited"
               continue 
