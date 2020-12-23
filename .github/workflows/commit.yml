@@ -35,18 +35,12 @@ jobs:
           while read -r path;
           do
             directory="$( echo $path )"
-            if [[ $directory != applications/clients/app/* ]]; then
-              echo "::set-output name=diffs::notcommited"
-              continue 
+            if [[ $directory == applications/clients/app/* ]]; then
+              echo "::set-output name=diffs::commited" 
             else
-              echo "::set-output name=diffs::commited"
-              break
+              echo "::set-output name=diffs::notcommited"
             fi
           done <<< "$DIFF"
-          echo $directory
-      - name: testing file
-        run: |
-          echo ${{ steps.set-matrix.outputs.diffs }} 
   job2:
     name: Job2
     needs: [job1]
