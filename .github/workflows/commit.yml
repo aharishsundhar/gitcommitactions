@@ -32,12 +32,9 @@ jobs:
         id: set-matrix
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
-
-          # Loop by lines
           while read path;
           do
             directory="$( echo $path | cut -d'/' -f1 -s )"
-
             if [[ "$directory" == "applications/clients/app/" ]]; then
               echo "::set-output name=diffs::commited"
               continue 
@@ -45,10 +42,10 @@ jobs:
               echo "::set-output name=diffs::notcommited"
             fi
           done <<< "$DIFF"
+          echo "$directory"
   job2:
     name: Job2
     needs: [job1]
-    if: needs.job1.outputs.run_rest_jobs == 'commited'
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
