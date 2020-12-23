@@ -35,7 +35,7 @@ jobs:
           while read path;
           do
             directory="$( echo $path | cut -d'/' -f1 -s )"
-            if [[ $directory == applications ]]; then
+            if [[ -z $directory == applications ]]; then
               echo "::set-output name=diffs::commited"
               continue 
             else
@@ -49,7 +49,7 @@ jobs:
   job2:
     name: Job2
     needs: [job1]
-    if: needs.job1.outputs.run_rest_jobs == '"commited"'
+    if: needs.job1.outputs.run_rest_jobs == 'commited'
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
