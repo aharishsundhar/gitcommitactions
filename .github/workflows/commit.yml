@@ -35,11 +35,12 @@ jobs:
           while read -r path;
           do
             directory="$( echo $path )"
-            if [[ $directory == applications/clients/app/* ]]; then
-              echo "::set-output name=diffs::commited"
+            if [[ $directory != applications/clients/app/* ]]; then
+              echo "::set-output name=diffs::notcommited"
               continue 
             else
-              echo "::set-output name=diffs::notcommited"
+              echo "::set-output name=diffs::commited"
+              break
             fi
           done <<< "$DIFF"
           echo $directory
