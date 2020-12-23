@@ -42,7 +42,7 @@ jobs:
               continue 
             else
               echo "::set-output name=diff::notcommited"
-            fi
+            fi;
   job2:
     name: Job2
     needs: [job1]
