@@ -8,7 +8,7 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     outputs: 
-          run_rest_jobs: ${{ steps.set-matrix.outputs.diff }}
+          run_rest_jobs: ${{ steps.set-matrix.outputs.diffs }}
     steps:
       - uses: actions/checkout@v2
       - name: Check for changes
@@ -34,16 +34,17 @@ jobs:
           DIFF="${{ steps.diff.outputs.diff }}"
 
           # Loop by lines
-          while read path 
+          while read path;
           do
             directory="$( echo $path | cut -d'/' -f1 -s )"
 
             if [ -z "$directory" == "applications/clients/app/" ]; then
-              echo "::set-output name=diff::commited"
+              echo "::set-output name=diffs::commited"
               continue 
             else
-              echo "::set-output name=diff::notcommited"
+              echo "::set-output name=diffs::notcommited"
             fi
+          done <<< "$DIFF"
   job2:
     name: Job2
     needs: [job1]
