@@ -1,4 +1,4 @@
-testing 33 continue
+testing 36 continue
 
 name: 'Commit Message Check'
 on:

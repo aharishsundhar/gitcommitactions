@@ -43,6 +43,9 @@ jobs:
             fi
           done <<< "$DIFF"
           echo "$directory"
+      - name: testing file
+        run: |
+          echo ${{ steps.set-matrix.outputs.diffs }} 
   job2:
     name: Job2
     needs: [job1]
