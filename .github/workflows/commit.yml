@@ -46,6 +46,7 @@ jobs:
   job2:
     name: Job2
     needs: [job1]
+    if: needs.job1.outputs.run_rest_jobs == commited
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
