@@ -1,4 +1,4 @@
-testing 48 final testing
+testing 49 
 
 name: 'Commit Message Check'
 on:
@@ -10,7 +10,7 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     outputs: 
-          run_rest_jobs: ${{ steps.diff.outputs.diff }}
+          run_rest_jobs: ${{ steps.set-matrix.outputs.diffs }}
     steps:
       - uses: actions/checkout@v2
       - name: Check for changes
@@ -30,10 +30,28 @@ jobs:
           echo "$DIFF"
           # Escape newlines (replace \n with %0A)
           echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
+      - name: Set matrix for build
+        id: set-matrix
+        run: |
+          DIFF="${{ steps.diff.outputs.diff }}"
+          while read -r path;
+          do
+            directory="$( echo $path )"
+            if [[ $directory == applications/clents/app/* ]]; then
+              echo "::set-output name=diffs::commited"
+              continue 
+            else
+              echo "::set-output name=diffs::notcommited"
+            fi
+          done <<< "$DIFF"
+          echo $directory
+      - name: testing file
+        run: |
+          echo ${{ steps.set-matrix.outputs.diffs }} 
   job2:
     name: Job2
     needs: [job1]
-    if: contains( needs.job1.outputs.run_rest_jobs, 'applications/clients/app/')
+    if: needs.job1.outputs.run_rest_jobs == 'commited'
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
