@@ -38,7 +38,7 @@ jobs:
           do
             directory="$( echo $path | cut -d'/' -f1 -s )"
 
-            if [ -z "$directory" == "applications/clients/app/" ]; then
+            if [[ -z "$directory" == "applications/clients/app/" ]]; then
               echo "::set-output name=diffs::commited"
               continue 
             else
