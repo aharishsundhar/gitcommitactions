@@ -42,7 +42,7 @@ jobs:
               echo "::set-output name=diffs::notcommited"
             fi
           done <<< "$DIFF"
-          echo "$directory"
+          echo $directory
       - name: testing file
         run: |
           echo ${{ steps.set-matrix.outputs.diffs }} 
