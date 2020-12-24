@@ -25,4 +25,3 @@ export class AngularController implements Controller {
         }
     }
 }
-// hello
