@@ -16,7 +16,8 @@ jobs:
       - name: Check for changes
         id: diff
         run: |
-          echo "123" > ./file.txt
+          echo ${{ (date +'%Y-%m-%dT%H:%M:%S') }}
+          echo "alpha-"${{ 10 + 1 }}
           if [ $GITHUB_BASE_REF ]; then
             # Pull Request
             git fetch origin $GITHUB_BASE_REF --depth=1
