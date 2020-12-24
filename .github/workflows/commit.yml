@@ -35,7 +35,7 @@ jobs:
           while read path;
           do
             directory="$( echo $path )"
-            if [[ $directory != applications/clients/app/* ]]; then
+            if [[ $directory != application/client/desktop/* ]]; then
               echo "::set-output name=diffs::notcommited" 
               continue
             else
