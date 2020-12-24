@@ -78,10 +78,10 @@ jobs:
             fi
           done <<< "$DIFF"
           echo $directory
-  UI frontend:
-    name: UI frontend
+  UIfrontend:
+    name: UIfrontend
     needs: [function]
-    if: needs.function.outputs.run_rest_jobs == 'commited'
+    if: needs.function.outputs.run_UI_jobs == 'commited'
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
@@ -89,7 +89,7 @@ jobs:
   services:
     name: Services
     needs: [function]
-    if: needs.function.outputs.run_rest_jobs == 'commited'
+    if: needs.function.outputs.run_services_jobs == 'commited'
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
@@ -97,7 +97,7 @@ jobs:
   generations:
     name: Generations
     needs: [function]
-    if: needs.function.outputs.run_rest_jobs == 'commited'
+    if: needs.function.outputs.run_generations_jobs == 'commited'
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
