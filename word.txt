@@ -1,4 +1,4 @@
-testing 53 another test
+testing another test
 
 name: 'Commit Message Check'
 on:
