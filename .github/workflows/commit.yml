@@ -31,7 +31,6 @@ jobs:
       - name: Set matrix for build
         id: set-matrix
         run: |
-          DIFF="${{ steps.diff.outputs.diff }}"
           while read path;
           do
             directory="$( echo $path )"
