@@ -33,6 +33,7 @@ jobs:
       - name: UI to build function
         id: UI-frontend
         run: |
+          echo 'Add value2' >> testfile.txt
           DIFF="${{ steps.diff.outputs.diff }}"
           while read path;
           do
