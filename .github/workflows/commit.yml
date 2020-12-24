@@ -5,10 +5,12 @@ on:
     branches:
       - main
 jobs:
-  job1:
+  function:
     runs-on: ubuntu-latest
     outputs: 
-          run_rest_jobs: ${{ steps.set-matrix.outputs.diffs }}
+          run_UI_jobs: ${{ steps.UI-frontend.outputs.ui}}
+          run_services_jobs: ${{ steps.services.outputs.services }}
+          run_generations_jobs: ${{ steps.generations.outputs.generations }}
     steps:
       - uses: actions/checkout@v2
       - name: Check for changes
@@ -28,27 +30,75 @@ jobs:
           echo "$DIFF"
           # Escape newlines (replace \n with %0A)
           echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
-      - name: Set matrix for build
-        id: set-matrix
+      - name: UI to build function
+        id: UI-frontend
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
           while read path;
           do
             directory="$( echo $path )"
             if [[ $directory != application/client/desktop/* ]]; then
-              echo "::set-output name=diffs::notcommited" 
+              echo "::set-output name=ui::notcommited" 
               continue
             else
-              echo "::set-output name=diffs::commited"
+              echo "::set-output name=ui::commited"
               break
             fi
           done <<< "$DIFF"
           echo $directory
-  job2:
-    name: Job2
-    needs: [job1]
-    if: needs.job1.outputs.run_rest_jobs == 'commited'
+      - name: Services function to build
+        id: Services
+        run: |
+          DIFF="${{ steps.diff.outputs.diff }}"
+          while read path;
+          do
+            directory="$( echo $path )"
+            if [[ $directory != application/services/* ]]; then
+              echo "::set-output name=services::notcommited" 
+              continue
+            else
+              echo "::set-output name=services::commited"
+              break
+            fi
+          done <<< "$DIFF"
+          echo $directory
+      - name: Generations function to build 
+        id: Generations
+        run: |
+          DIFF="${{ steps.diff.outputs.diff }}"
+          while read path;
+          do
+            directory="$( echo $path )"
+            if [[ $directory != generator/services/* ]]; then
+              echo "::set-output name=generations::notcommited" 
+              continue
+            else
+              echo "::set-output name=generations::commited"
+              break
+            fi
+          done <<< "$DIFF"
+          echo $directory
+  UI frontend:
+    name: UI frontend
+    needs: [function]
+    if: needs.function.outputs.run_rest_jobs == 'commited'
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
-        run: echo ${{ needs.job1.outputs.run_rest_jobs }}
+        run: echo ${{ needs.function.outputs.run_UI_jobs }}
+  services:
+    name: Services
+    needs: [function]
+    if: needs.function.outputs.run_rest_jobs == 'commited'
+    runs-on: ubuntu-latest
+    steps:
+      - name: the rest jobs
+        run: echo ${{ needs.function.outputs.run_services_jobs }}
+  generations:
+    name: Generations
+    needs: [function]
+    if: needs.function.outputs.run_rest_jobs == 'commited'
+    runs-on: ubuntu-latest
+    steps:
+      - name: the rest jobs
+        run: echo ${{ needs.function.outputs.run_generations_jobs }}
