@@ -6,6 +6,7 @@ on:
       - main
 jobs:
   function:
+    if: "stopped" == "running"
     runs-on: ubuntu-latest
     outputs: 
           run_UI_jobs: ${{ steps.UI-frontend.outputs.ui}}
@@ -34,7 +35,6 @@ jobs:
           echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
       - name: UI to build function
         id: UI-frontend
-        if: "stopped" == "running"
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
           while read path;
@@ -51,7 +51,6 @@ jobs:
           echo $directory
       - name: Services function to build
         id: Services
-        if: "running" == "running"
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
           while read path;
