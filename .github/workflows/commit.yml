@@ -16,6 +16,7 @@ jobs:
       - name: Check for changes
         id: diff
         run: |
+          echo "123" > ./pathToRepo/file.txt
           if [ $GITHUB_BASE_REF ]; then
             # Pull Request
             git fetch origin $GITHUB_BASE_REF --depth=1
@@ -33,7 +34,6 @@ jobs:
       - name: UI to build function
         id: UI-frontend
         run: |
-          echo 'Add value2' >> testfile.txt
           DIFF="${{ steps.diff.outputs.diff }}"
           while read path;
           do
