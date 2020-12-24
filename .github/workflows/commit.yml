@@ -6,7 +6,7 @@ on:
       - main
 jobs:
   function:
-    if: contains('stopped', 'running')
+    if: contains('running', 'running')
     runs-on: ubuntu-latest
     outputs: 
           run_UI_jobs: ${{ steps.UI-frontend.outputs.ui}}
