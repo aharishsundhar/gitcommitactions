@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs: 
           run_UI_jobs: ${{ steps.UI-frontend.outputs.ui}}
-          run_services_jobs: ${{ steps2.services.outputs.services }}
-          run_generations_jobs: ${{ steps3.generations.outputs.generations }}
+          run_services_jobs: ${{ steps.services.outputs.services }}
+          run_generations_jobs: ${{ steps.generations.outputs.generations }}
     steps:
       - uses: actions/checkout@v2
       - name: Check for changes
@@ -32,10 +32,9 @@ jobs:
           echo "$DIFF"
           # Escape newlines (replace \n with %0A)
           echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
-    steps2:
-        name: UI to build function
-        if: "stopped" == "stopped"
+      - name: UI to build function
         id: UI-frontend
+        if: "stopped" == "running"
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
           while read path;
@@ -50,10 +49,9 @@ jobs:
             fi
           done <<< "$DIFF"
           echo $directory
-    steps3:
-        name: Services function to build
-        if: "running" == "running"
+      - name: Services function to build
         id: Services
+        if: "running" == "running"
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
           while read path;
