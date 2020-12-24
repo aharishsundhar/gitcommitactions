@@ -23,4 +23,3 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-
