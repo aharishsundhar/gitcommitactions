@@ -33,6 +33,7 @@ jobs:
           # Escape newlines (replace \n with %0A)
           echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
       - name: UI to build function
+        if: "stopped" == "running"
         id: UI-frontend
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
@@ -49,33 +50,18 @@ jobs:
           done <<< "$DIFF"
           echo $directory
       - name: Services function to build
+        if: "running" == "running"
         id: Services
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
           while read path;
           do
             directory="$( echo $path )"
-            if [[ $directory != application/services/* ]]; then
+            if [[ $directory != application/services/* || $directory != generator/services/* ]]; then
               echo "::set-output name=services::notcommited" 
               continue
             else
               echo "::set-output name=services::commited"
-              break
-            fi
-          done <<< "$DIFF"
-          echo $directory
-      - name: Generations function to build 
-        id: Generations
-        run: |
-          DIFF="${{ steps.diff.outputs.diff }}"
-          while read path;
-          do
-            directory="$( echo $path )"
-            if [[ $directory != generator/services/* ]]; then
-              echo "::set-output name=generations::notcommited" 
-              continue
-            else
-              echo "::set-output name=generations::commited"
               break
             fi
           done <<< "$DIFF"
