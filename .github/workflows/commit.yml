@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs: 
           run_UI_jobs: ${{ steps.UI-frontend.outputs.ui}}
-          run_services_jobs: ${{ steps.services.outputs.services }}
-          run_generations_jobs: ${{ steps.generations.outputs.generations }}
+          run_services_jobs: ${{ steps.services.outputs.service }}
+          run_generations_jobs: ${{ steps.services.outputs.service }}
     steps:
       - uses: actions/checkout@v2
       - name: Check for changes
@@ -48,17 +48,17 @@ jobs:
           done <<< "$DIFF"
           echo $directory
       - name: Services function to build
-        id: Services
+        id: services
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
           while read path;
           do
             directory="$( echo $path )"
             if [[ $directory != application/services/* ]]  || [[ $directory != generator/services/* ]]; then
-              echo "::set-output name=services::notcommited" 
+              echo "::set-output name=service::notcommited" 
               continue
             else
-              echo "::set-output name=services::commited"
+              echo "::set-output name=service::commited"
               break
             fi
           done <<< "$DIFF"
