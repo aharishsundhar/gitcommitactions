@@ -55,7 +55,7 @@ jobs:
           while read path;
           do
             directory="$( echo $path )"
-            if [[ $directory != application/services/* ]  || [ $directory != generator/services/* ]]; then
+            if [[ $directory != application/services/* && $directory != generator/services/*  ]]; then
               echo "::set-output name=service::notcommited" 
               continue
             else
