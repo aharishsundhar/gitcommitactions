@@ -6,7 +6,6 @@ on:
       - main
 jobs:
   function:
-    if: contains('running', 'running')
     runs-on: ubuntu-latest
     outputs: 
           run_UI_jobs: ${{ steps.UI-frontend.outputs.ui}}
@@ -32,6 +31,7 @@ jobs:
           # Escape newlines (replace \n with %0A)
           echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
       - name: UI to build function
+        if: contains('stopped', 'running')
         id: UI-frontend
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
@@ -48,6 +48,7 @@ jobs:
           done <<< "$DIFF"
           echo $directory
       - name: Services function to build
+        if: contains('running', 'running')
         id: services
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
