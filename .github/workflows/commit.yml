@@ -51,7 +51,7 @@ jobs:
           done <<< "$DIFF"
           echo $directory
       - name: Services function to build
-        if: ${{ env.instance_stopped }} == 'running'
+        if: env.instance_stopped == 'running'
         id: services
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
