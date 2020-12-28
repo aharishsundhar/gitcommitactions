@@ -68,16 +68,16 @@ jobs:
       #     echo $directory
       - uses: actions/checkout@v2
         with: 
-          path: '/generator/services/configurationmanager/src/assests/'
+          path: './generator/services/configurationmanager/src/assests/'
       - run: |
-          echo "`jq '.base_config[0].value="Alpha-20"' configuration.json`" > configuration.json
-          echo "`jq '.base_config[1].value="1.2.14"' configuration.json`" > configuration.json
-          echo "`jq '.base_config[2].value="28/12/2020"' configuration.json`" > configuration.json
+          echo "`jq '.base_config[0].value="Alpha-20"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
+          echo "`jq '.base_config[1].value="1.2.14"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
+          echo "`jq '.base_config[2].value="28/12/2020"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
       - uses: EndBug/add-and-commit@v6
         with:
           message: 'Add the version and date'
           add: '*.json --force'
-          cwd: '/generator/services/configurationmanager/src/assests/'  
+          cwd: './generator/services/configurationmanager/src/assests/'  
           token: ${{ secrets.TOKEN }}
   # UIfrontend:
   #   name: UIfrontend
