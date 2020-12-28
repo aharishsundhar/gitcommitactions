@@ -67,10 +67,9 @@ jobs:
       #     done <<< "$DIFF"
       #     echo $directory
       - uses: actions/checkout@v2
-      - name: siva function
         with: 
           path: './generator/services/configurationmanager/src/assests'
-        run: |
+      - run: |
           echo "`jq '.base_config[0].value="Alpha-20"' configuration.json`" > configuration.json
           echo "`jq '.base_config[1].value="1.2.14"' configuration.json`" > configuration.json
           echo "`jq '.base_config[2].value="28/12/2020"' configuration.json`" > configuration.json
