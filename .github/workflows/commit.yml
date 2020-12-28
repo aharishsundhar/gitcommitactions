@@ -15,57 +15,57 @@ jobs:
           run_services_jobs: ${{ steps.services.outputs.service }}
           run_generations_jobs: ${{ steps.services.outputs.service }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Check for changes
-        id: diff
-        run: |
-          if [ $GITHUB_BASE_REF ]; then
-            # Pull Request
-            git fetch origin $GITHUB_BASE_REF --depth=1
-            export DIFF=$( git diff --name-only origin/$GITHUB_BASE_REF $GITHUB_SHA )
-            echo "Diff between origin/$GITHUB_BASE_REF and $GITHUB_SHA"
-          else
-            # Push
-            git fetch origin ${{ github.event.before }} --depth=1
-            export DIFF=$( git diff --name-only ${{ github.event.before }} $GITHUB_SHA )
-            echo "Diff between ${{ github.event.before }} and $GITHUB_SHA"
-          fi
-          echo "$DIFF"
-          # Escape newlines (replace \n with %0A)
-          echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
-      - name: UI to build function
-        id: UI-frontend
-        run: |
-          DIFF="${{ steps.diff.outputs.diff }}"
-          while read path;
-          do
-            directory="$( echo $path )"
-            if [[ $directory != application/client/desktop/* ]]; then
-              echo "::set-output name=ui::notcommited" 
-              continue
-            else
-              echo "::set-output name=ui::commited"
-              break
-            fi
-          done <<< "$DIFF"
-          echo $directory
-      - name: Services function to build
-        if: env.instance_running == 'running'
-        id: services
-        run: |
-          DIFF="${{ steps.diff.outputs.diff }}"
-          while read path;
-          do
-            directory="$( echo $path )"
-            if [[ $directory != application/services/* && $directory != generator/services/*  ]]; then
-              echo "::set-output name=service::notcommited" 
-              continue
-            else
-              echo "::set-output name=service::commited"
-              break
-            fi
-          done <<< "$DIFF"
-          echo $directory
+      # - uses: actions/checkout@v2
+      # - name: Check for changes
+      #   id: diff
+      #   run: |
+      #     if [ $GITHUB_BASE_REF ]; then
+      #       # Pull Request
+      #       git fetch origin $GITHUB_BASE_REF --depth=1
+      #       export DIFF=$( git diff --name-only origin/$GITHUB_BASE_REF $GITHUB_SHA )
+      #       echo "Diff between origin/$GITHUB_BASE_REF and $GITHUB_SHA"
+      #     else
+      #       # Push
+      #       git fetch origin ${{ github.event.before }} --depth=1
+      #       export DIFF=$( git diff --name-only ${{ github.event.before }} $GITHUB_SHA )
+      #       echo "Diff between ${{ github.event.before }} and $GITHUB_SHA"
+      #     fi
+      #     echo "$DIFF"
+      #     # Escape newlines (replace \n with %0A)
+      #     echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
+      # - name: UI to build function
+      #   id: UI-frontend
+      #   run: |
+      #     DIFF="${{ steps.diff.outputs.diff }}"
+      #     while read path;
+      #     do
+      #       directory="$( echo $path )"
+      #       if [[ $directory != application/client/desktop/* ]]; then
+      #         echo "::set-output name=ui::notcommited" 
+      #         continue
+      #       else
+      #         echo "::set-output name=ui::commited"
+      #         break
+      #       fi
+      #     done <<< "$DIFF"
+      #     echo $directory
+      # - name: Services function to build
+      #   if: env.instance_running == 'running'
+      #   id: services
+      #   run: |
+      #     DIFF="${{ steps.diff.outputs.diff }}"
+      #     while read path;
+      #     do
+      #       directory="$( echo $path )"
+      #       if [[ $directory != application/services/* && $directory != generator/services/*  ]]; then
+      #         echo "::set-output name=service::notcommited" 
+      #         continue
+      #       else
+      #         echo "::set-output name=service::commited"
+      #         break
+      #       fi
+      #     done <<< "$DIFF"
+      #     echo $directory
       - name: siva function
       - uses: actions/checkout@v2
         with: 
