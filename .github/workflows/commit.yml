@@ -34,7 +34,7 @@ jobs:
           # Escape newlines (replace \n with %0A)
           echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
       - name: UI to build function
-        if: ${{ env.instance_stopped }} == '"running"'
+        if: ${{ env.instance_stopped }} == 'running'
         id: UI-frontend
         run: |
           echo ${{ env.instance_stopped }}
@@ -52,7 +52,7 @@ jobs:
           done <<< "$DIFF"
           echo $directory
       - name: Services function to build
-        if: ${{ env.instance_stopped }} == '"running"'
+        if: ${{ env.instance_stopped }} == 'running'
         id: services
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
