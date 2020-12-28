@@ -66,8 +66,8 @@ jobs:
             fi
           done <<< "$DIFF"
           echo $directory
-      - uses: actions/checkout@v2
       - name: siva function
+      - uses: actions/checkout@v2
         with: 
           path: './generator/services/configurationmanager/src/assests'
       - run: |
