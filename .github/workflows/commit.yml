@@ -37,6 +37,7 @@ jobs:
         if: ${{ env.instance_stopped }} == '"running"'
         id: UI-frontend
         run: |
+          echo ${{ env.instance_stopped }}
           DIFF="${{ steps.diff.outputs.diff }}"
           while read path;
           do
