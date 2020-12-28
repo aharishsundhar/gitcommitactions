@@ -34,7 +34,6 @@ jobs:
           # Escape newlines (replace \n with %0A)
           echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
       - name: UI to build function
-        if: env.instance_stopped == 'running'
         id: UI-frontend
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
@@ -51,7 +50,7 @@ jobs:
           done <<< "$DIFF"
           echo $directory
       - name: Services function to build
-        if: env.instance_stopped == 'running'
+        if: env.instance_running == 'running'
         id: services
         run: |
           DIFF="${{ steps.diff.outputs.diff }}"
@@ -67,6 +66,20 @@ jobs:
             fi
           done <<< "$DIFF"
           echo $directory
+      - name: siva function
+      - uses: actions/checkout@v2
+        with: 
+          path: './generator/services/configurationmanager/src/assests'
+      - run: |
+          echo "`jq '.base_config[0].value="Alpha-20"' configuration.json`" > configuration.json
+          echo "`jq '.base_config[1].value="1.2.14"' configuration.json`" > configuration.json
+          echo "`jq '.base_config[2].value="28/12/2020"' configuration.json`" > configuration.json
+      - uses: EndBug/add-and-commit@v6
+        with:
+          message: 'Add the version and date'
+          add: '*.json --force'
+          cwd: './generator/services/configurationmanager/src/assests'  
+          token: ${{ secrets.TOKEN }}
   UIfrontend:
     name: UIfrontend
     needs: [function]
