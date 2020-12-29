@@ -77,7 +77,7 @@ jobs:
         with:
           message: 'Add the version and date'
           add: '*.json --force'
-          cwd: './'  
+          cwd: './generator/services/configurationmanager/src/assests/'  
           token: ${{ secrets.TOKEN }}
   # UIfrontend:
   #   name: UIfrontend
