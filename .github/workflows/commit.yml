@@ -13,7 +13,12 @@ jobs:
     outputs: 
           run_UI_jobs: ${{ steps.frontend.outputs.ui}}
           run_services_jobs: ${{ steps.Backend.outputs.backend }}
-          run_generations_jobs: ${{ steps.Backend.outputs.backend }}
+          api: ${{ steps.Backend.outputs.api }}
+          Auth: ${{ steps.Backend.outputs.Auth }}
+          admin: ${{ steps.Backend.outputs.admin }}
+          Admin: ${{ steps.Backend.outputs.Admin }}
+          angular: ${{ steps.Backend.outputs.angular }}
+
     steps:
       - uses: actions/checkout@v2
       - name: Check for changes
@@ -53,12 +58,28 @@ jobs:
           while read path;
           do
             directory="$( echo $path )"
-            if [[ $directory != application/services/* && $directory != generator/services/*  ]]; then
-              echo "::set-output name=backend::notcommited" 
+            if [[ $directory == application/services/apigateway/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=api::apigateway" 
+              continue
+            elif [[ $directory == application/services/Auth-Proxy/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=Auth::Auth-Proxy"
+              continue
+            elif [[ $directory == application/services/adminmanager/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=admin::adminmanager"
+              continue
+            elif [[ $directory == generator/services/Admin-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=Admin::Admin-manager" 
+              continue
+            elif [[ $directory == generator/services/angular-gen-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=angular::angular-gen-manager" 
               continue
             else
-              echo "::set-output name=backend::commited"
-              break
+              echo "::set-output name=backend::notcommited"
             fi
           done <<< "$FILE_DIFF"
       # - uses: actions/checkout@v2
@@ -89,12 +110,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
-        run: echo ${{ needs.function.outputs.run_services_jobs }}
-  generations:
-    name: Generations
-    needs: [function]
-    if: needs.function.outputs.run_generations_jobs == 'commited'
-    runs-on: ubuntu-latest
-    steps:
-      - name: the rest jobs
-        run: echo ${{ needs.function.outputs.run_generations_jobs }}
+        run: |
+          echo "docker-compose rm -rf ${{ needs.function.outputs.api }}"
+          echo "docker-compose rm -rf ${{ needs.function.outputs.admin }}"
+          echo "docker-compose rm -rf ${{ needs.function.outputs.Auth }}"
+          echo "docker-compose rm -rf ${{ needs.function.outputs.Admin }}"
+          echo "docker-compose rm -rf ${{ needs.function.outputs.angular }}"
+           

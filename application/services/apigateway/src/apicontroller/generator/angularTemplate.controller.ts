@@ -2,9 +2,9 @@ import * as express from 'express';
 import { Request, Response } from 'express';
 import Controller from "../../interfaces/controller.interface";
 import { ApiAdaptar } from '../../config/apiAdaptar';
-import { Constants } from '../../config/Constants';
+import  {Constants} from '../../config/Constants';
 
-export class AngularController implements Controller {
+export class AngularTemplateController implements Controller {
     public router = express.Router();
 
     constructor() {
@@ -12,13 +12,14 @@ export class AngularController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.route('/angular/project').post(this.createProject);
+        this.router.route('/template/angular').post(this.createAngularTemplate);
     }
 
-    public async createProject(req: Request, res: Response) {
+    public async createAngularTemplate(req: Request, res: Response) {
         try {
+            console.log('create angular template in apigateway -----  ');
             let response = await Promise.resolve(new ApiAdaptar().post(
-                `${Constants.angularGenUrl}/angular/project`, req.body));
+                `${Constants.angularTemplateGenUrl}/template/angular`, req.body));
             res.send(response);
         } catch (err) {
             res.send(err);

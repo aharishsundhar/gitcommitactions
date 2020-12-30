@@ -4,7 +4,7 @@ import Controller from "../../interfaces/controller.interface";
 import { ApiAdaptar } from '../../config/apiAdaptar';
 import { Constants } from '../../config/Constants';
 
-export class AngularController implements Controller {
+export class ReactController implements Controller {
     public router = express.Router();
 
     constructor() {
@@ -12,13 +12,13 @@ export class AngularController implements Controller {
     }
 
     private initializeRoutes() {
-        this.router.route('/angular/project').post(this.createProject);
+        this.router.route('/react/project').post(this.createProject);
     }
 
     public async createProject(req: Request, res: Response) {
         try {
             let response = await Promise.resolve(new ApiAdaptar().post(
-                `${Constants.angularGenUrl}/angular/project`, req.body));
+                `${Constants.reactgenUrl}/react/project`, req.body));
             res.send(response);
         } catch (err) {
             res.send(err);
