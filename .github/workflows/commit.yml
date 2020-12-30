@@ -10,96 +10,91 @@ env:
 jobs:
   function:
     runs-on: ubuntu-latest
-    # outputs: 
-    #       run_UI_jobs: ${{ steps.UI-frontend.outputs.ui}}
-    #       run_services_jobs: ${{ steps.services.outputs.service }}
-    #       run_generations_jobs: ${{ steps.services.outputs.service }}
+    outputs: 
+          run_UI_jobs: ${{ steps.frontend.outputs.ui}}
+          run_services_jobs: ${{ steps.Backend.outputs.backend }}
+          run_generations_jobs: ${{ steps.Backend.outputs.backend }}
     steps:
-      # - uses: actions/checkout@v2
-      # - name: Check for changes
-      #   id: diff
-      #   run: |
-      #     if [ $GITHUB_BASE_REF ]; then
-      #       # Pull Request
-      #       git fetch origin $GITHUB_BASE_REF --depth=1
-      #       export DIFF=$( git diff --name-only origin/$GITHUB_BASE_REF $GITHUB_SHA )
-      #       echo "Diff between origin/$GITHUB_BASE_REF and $GITHUB_SHA"
-      #     else
-      #       # Push
-      #       git fetch origin ${{ github.event.before }} --depth=1
-      #       export DIFF=$( git diff --name-only ${{ github.event.before }} $GITHUB_SHA )
-      #       echo "Diff between ${{ github.event.before }} and $GITHUB_SHA"
-      #     fi
-      #     echo "$DIFF"
-      #     # Escape newlines (replace \n with %0A)
-      #     echo "::set-output name=diff::$( echo "$DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
-      # - name: UI to build function
-      #   id: UI-frontend
-      #   run: |
-      #     DIFF="${{ steps.diff.outputs.diff }}"
-      #     while read path;
-      #     do
-      #       directory="$( echo $path )"
-      #       if [[ $directory != application/client/desktop/* ]]; then
-      #         echo "::set-output name=ui::notcommited" 
-      #         continue
-      #       else
-      #         echo "::set-output name=ui::commited"
-      #         break
-      #       fi
-      #     done <<< "$DIFF"
-      #     echo $directory
-      # - name: Services function to build
-      #   if: env.instance_running == 'running'
-      #   id: services
-      #   run: |
-      #     DIFF="${{ steps.diff.outputs.diff }}"
-      #     while read path;
-      #     do
-      #       directory="$( echo $path )"
-      #       if [[ $directory != application/services/* && $directory != generator/services/*  ]]; then
-      #         echo "::set-output name=service::notcommited" 
-      #         continue
-      #       else
-      #         echo "::set-output name=service::commited"
-      #         break
-      #       fi
-      #     done <<< "$DIFF"
-      #     echo $directory
       - uses: actions/checkout@v2
-      - uses: EndBug/add-and-commit@v6
-        with: 
-          path: './generator/services/configurationmanager/src/assests/'
-          message: 'Add the version and date'
-          add: '*.json --force'
-          cwd: './generator/services/configurationmanager/src/assests/'  
-          token: ${{ secrets.TOKEN }}
-      - run: |
-          echo "`jq '.base_config[0].value="Alpha-20"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
-          echo "`jq '.base_config[1].value="1.2.14"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
-          echo "`jq '.base_config[2].value="28/12/2020"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
+      - name: Check for changes
+        id: diff
+        run: |
+          if [ $GITHUB_BASE_REF ]; then
+            git fetch origin $GITHUB_BASE_REF --depth=1
+            export FILE_DIFF=$( git diff --name-only origin/$GITHUB_BASE_REF $GITHUB_SHA )
+            echo "Diff between origin/$GITHUB_BASE_REF and $GITHUB_SHA"
+          else
+            git fetch origin ${{ github.event.before }} --depth=1
+            export FILE_DIFF=$( git diff --name-only ${{ github.event.before }} $GITHUB_SHA )
+            echo "Diff between ${{ github.event.before }} and $GITHUB_SHA"
+          fi
+          echo "$FILE_DIFF"
+          echo "::set-output name=diff::$( echo "$FILE_DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
+      - name: UI to build function
+        id: frontend
+        run: |
+          FILE_DIFF="${{ steps.diff.outputs.diff }}"
+          while read path;
+          do
+            directory="$( echo $path )"
+            if [[ $directory != application/clients/desktop/* ]]; then
+              echo "::set-output name=ui::notcommited" 
+              continue
+            else
+              echo "::set-output name=ui::commited"
+              break
+            fi
+          done <<< "$FILE_DIFF"
+      - name: Services function to build
+        if: env.instance_running == 'running'
+        id: Backend
+        run: |
+          FILE_DIFF="${{ steps.diff.outputs.diff }}"
+          while read path;
+          do
+            directory="$( echo $path )"
+            if [[ $directory != application/services/* && $directory != generator/services/*  ]]; then
+              echo "::set-output name=backend::notcommited" 
+              continue
+            else
+              echo "::set-output name=backend::commited"
+              break
+            fi
+          done <<< "$FILE_DIFF"
+      # - uses: actions/checkout@v2
+      # - uses: EndBug/add-and-commit@v6
+      #   with: 
+      #     path: './generator/services/configurationmanager/src/assests/'
+      #     message: 'Add the version and date'
+      #     add: '*.json --force'
+      #     cwd: './generator/services/configurationmanager/src/assests/'  
+      #     token: ${{ secrets.TOKEN }}
+      # - run: |
+      #     echo "`jq '.base_config[0].value="Alpha-20"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
+      #     echo "`jq '.base_config[1].value="1.2.14"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
+      #     echo "`jq '.base_config[2].value="28/12/2020"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
           
-  # UIfrontend:
-  #   name: UIfrontend
-  #   needs: [function]
-  #   if: needs.function.outputs.run_UI_jobs == 'commited'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: the rest jobs
-  #       run: echo ${{ needs.function.outputs.run_UI_jobs }}
-  # services:
-  #   name: Services
-  #   needs: [function]
-  #   if: needs.function.outputs.run_services_jobs == 'commited'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: the rest jobs
-  #       run: echo ${{ needs.function.outputs.run_services_jobs }}
-  # generations:
-  #   name: Generations
-  #   needs: [function]
-  #   if: needs.function.outputs.run_generations_jobs == 'commited'
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: the rest jobs
-  #       run: echo ${{ needs.function.outputs.run_generations_jobs }}
+  UIfrontend:
+    name: UIfrontend
+    needs: [function]
+    if: needs.function.outputs.run_UI_jobs == 'commited'
+    runs-on: ubuntu-latest
+    steps:
+      - name: the rest jobs
+        run: echo ${{ needs.function.outputs.run_UI_jobs }}
+  services:
+    name: Services
+    needs: [function]
+    if: needs.function.outputs.run_services_jobs == 'commited'
+    runs-on: ubuntu-latest
+    steps:
+      - name: the rest jobs
+        run: echo ${{ needs.function.outputs.run_services_jobs }}
+  generations:
+    name: Generations
+    needs: [function]
+    if: needs.function.outputs.run_generations_jobs == 'commited'
+    runs-on: ubuntu-latest
+    steps:
+      - name: the rest jobs
+        run: echo ${{ needs.function.outputs.run_generations_jobs }}
