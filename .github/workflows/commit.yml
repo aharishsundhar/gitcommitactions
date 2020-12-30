@@ -16,7 +16,7 @@ jobs:
           api: ${{ steps.Backend.outputs.api }}
           Auth: ${{ steps.Backend.outputs.Auth }}
           admin: ${{ steps.Backend.outputs.admin }}
-          Admin: ${{ steps.Backend.outputs.Admin }}
+          Adminman: ${{ steps.Backend.outputs.Adminman }}
           angular: ${{ steps.Backend.outputs.angular }}
 
     steps:
@@ -72,7 +72,7 @@ jobs:
               continue
             elif [[ $directory == generator/services/Admin-manager/* ]]; then
               echo "::set-output name=backend::commited"
-              echo "::set-output name=Admin::Admin-manager" 
+              echo "::set-output name=Adminman::Admin-manager" 
               continue
             elif [[ $directory == generator/services/angular-gen-manager/* ]]; then
               echo "::set-output name=backend::commited"
@@ -114,6 +114,6 @@ jobs:
           echo "docker-compose rm -rf ${{ needs.function.outputs.api }}"
           echo "docker-compose rm -rf ${{ needs.function.outputs.admin }}"
           echo "docker-compose rm -rf ${{ needs.function.outputs.Auth }}"
-          echo "docker-compose rm -rf ${{ needs.function.outputs.Admin }}"
+          echo "docker-compose rm -rf ${{ needs.function.outputs.Adminman }}"
           echo "docker-compose rm -rf ${{ needs.function.outputs.angular }}"
            
