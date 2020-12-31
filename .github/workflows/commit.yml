@@ -218,5 +218,5 @@ jobs:
     steps:
       - name: the rest jobs
         run: |
-          echo "docker-compose ${{ needs.function.outputs.container }" 
+          echo "docker-compose ${{ needs.function.outputs.container }}" 
            
