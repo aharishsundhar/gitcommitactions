@@ -12,13 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     outputs: 
           run_UI_jobs: ${{ steps.frontend.outputs.ui}}
-          run_services_jobs: ${{ steps.Backend.outputs.backend }}
-          api: ${{ steps.Backend.outputs.api }}
-          Auth: ${{ steps.Backend.outputs.Auth }}
-          admin: ${{ steps.Backend.outputs.admin }}
-          Adminman: ${{ steps.Backend.outputs.Adminman }}
-          angular: ${{ steps.Backend.outputs.angular }}
-
+          run_services_jobs: ${{ steps.Backend.outputs.backend }} \
+          container : ${{ steps.Backend.outputs.api }} \
+                ${{ steps.Backend.outputs.Auth }} \
+                ${{ steps.Backend.outputs.admin }} \
+                ${{ steps.Backend.outputs.Adminman }} \
+                ${{ steps.Backend.outputs.angular }} \
     steps:
       - uses: actions/checkout@v2
       - name: Check for changes
@@ -70,11 +69,119 @@ jobs:
               echo "::set-output name=backend::commited" 
               echo "::set-output name=admin::adminmanager"
               continue
+            elif [[ $directory == application/services/featuremanager/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=Auth::Auth-Proxy"
+              continue
+            elif [[ $directory == application/services/entitymanager/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=admin::adminmanager"
+              continue
+            elif [[ $directory == application/services/flowmanager/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=Auth::Auth-Proxy"
+              continue
+            elif [[ $directory == application/services/microflowmanager/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=admin::adminmanager"
+              continue
+            elif [[ $directory == application/services/menubuildermanager/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=Auth::Auth-Proxy"
+              continue
+            elif [[ $directory == application/services/screenmanager/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=admin::adminmanager"
+              continue
+            elif [[ $directory == application/services/securitymanager/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=Auth::Auth-Proxy"
+              continue
+            elif [[ $directory == application/services/Camunda/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=admin::adminmanager"
+              continue
+            elif [[ $directory == application/services/templatemanager/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=admin::adminmanager"
+              continue
+            elif [[ $directory == application/services/projectmanager/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=admin::adminmanager"
+              continue
+            elif [[ $directory == application/services/deletemanager/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=admin::adminmanager"
+              continue
+            elif [[ $directory == application/services/github-manager/* ]]; then
+              echo "::set-output name=backend::commited" 
+              echo "::set-output name=admin::adminmanager"
+              continue
             elif [[ $directory == generator/services/Admin-manager/* ]]; then
               echo "::set-output name=backend::commited"
               echo "::set-output name=Adminman::Admin-manager" 
               continue
             elif [[ $directory == generator/services/angular-gen-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=angular::angular-gen-manager" 
+              continue
+            elif [[ $directory == generator/services/screen-gen-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=angular::angular-gen-manager" 
+              continue
+            elif [[ $directory == generator/services/mongo-gen-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=Adminman::Admin-manager" 
+              continue
+            elif [[ $directory == generator/services/node-gen-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=angular::angular-gen-manager" 
+              continue
+            elif [[ $directory == generator/services/datastore-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=angular::angular-gen-manager" 
+              continue
+            elif [[ $directory == generator/services/infrastructure-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=Adminman::Admin-manager" 
+              continue
+            elif [[ $directory == generator/services/generation-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=angular::angular-gen-manager" 
+              continue
+            elif [[ $directory == generator/services/frontend-gen-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=angular::angular-gen-manager" 
+              continue
+            elif [[ $directory == generator/services/backend-gen-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=Adminman::Admin-manager" 
+              continue
+            elif [[ $directory == generator/services/angular-template-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=angular::angular-gen-manager" 
+              continue
+            elif [[ $directory == generator/services/reactv16-gen-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=angular::angular-gen-manager" 
+              continue
+            elif [[ $directory == generator/services/configurationmanager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=Adminman::Admin-manager" 
+              continue
+            elif [[ $directory == generator/services/auth-gen-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=angular::angular-gen-manager" 
+              continue
+            elif [[ $directory == generator/services/code-gen-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=angular::angular-gen-manager" 
+              continue
+            elif [[ $directory == generator/services/ionic-manager/* ]]; then
+              echo "::set-output name=backend::commited"
+              echo "::set-output name=Adminman::Admin-manager" 
+              continue
+            elif [[ $directory == generator/services/swagger-gen-manager/* ]]; then
               echo "::set-output name=backend::commited"
               echo "::set-output name=angular::angular-gen-manager" 
               continue
@@ -111,9 +218,9 @@ jobs:
     steps:
       - name: the rest jobs
         run: |
-          echo "docker-compose rm -rf ${{ needs.function.outputs.api }}"
-          echo "docker-compose rm -rf ${{ needs.function.outputs.admin }}"
-          echo "docker-compose rm -rf ${{ needs.function.outputs.Auth }}"
-          echo "docker-compose rm -rf ${{ needs.function.outputs.Adminman }}"
-          echo "docker-compose rm -rf ${{ needs.function.outputs.angular }}"
+          echo "docker-compose ${{ needs.function.outputs.api }} \
+          ${{ needs.function.outputs.admin }} \
+          ${{ needs.function.outputs.Auth }} \
+         ${{ needs.function.outputs.Adminman }} \
+        ${{ needs.function.outputs.angular }}" 
            
