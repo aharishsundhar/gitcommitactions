@@ -13,8 +13,8 @@ jobs:
     outputs: 
           run_UI_jobs: ${{ steps.frontend.outputs.ui}}
           run_services_jobs: ${{ steps.Backend.outputs.backend }}
-          microservices: ${{ steps.microservices.outputs.microservices }}
-          container : ${{ steps.microservices.outputs.featuremanager }} 
+          microservices: ${{ steps.microservice.outputs.microservices }}
+          container: ${{ steps.microservices.outputs.featuremanager }} 
                 ${{ steps.microservices.outputs.entitymanager }} 
                 ${{ steps.microservices.outputs.flowmanager }} 
                 ${{ steps.microservices.outputs.microflowmanager }} 
@@ -94,7 +94,7 @@ jobs:
           done <<< "$FILE_DIFF"
       - name: Microservices to check run
         if: steps.Backend.outputs.backend == 'commited'
-        id: microservices
+        id: microservice
         run: |
           FILE_DIFF="${{ steps.diff.outputs.diff }}"
           while read path;
