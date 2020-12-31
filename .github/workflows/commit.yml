@@ -77,7 +77,7 @@ jobs:
             fi
           done <<< "$FILE_DIFF"
       - name: Backend function to build
-        if: steps.ec2.outputs.INSTANCE_STATE == '"running"'
+        if: env.instance_running == 'running'
         id: Backend
         run: |
           FILE_DIFF="${{ steps.diff.outputs.diff }}"
