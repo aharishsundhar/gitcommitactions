@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs: 
           run_UI_jobs: ${{ steps.frontend.outputs.ui}}
-          run_services_jobs: ${{ steps.Backend.outputs.backend }} \
+          run_services_jobs: ${{ steps.Backend.outputs.backend }}
           container : ${{ steps.Backend.outputs.api }} \
                 ${{ steps.Backend.outputs.Auth }} \
                 ${{ steps.Backend.outputs.admin }} \
