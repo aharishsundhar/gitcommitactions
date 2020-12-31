@@ -13,11 +13,11 @@ jobs:
     outputs: 
           run_UI_jobs: ${{ steps.frontend.outputs.ui}}
           run_services_jobs: ${{ steps.Backend.outputs.backend }}
-          container : ${{ steps.Backend.outputs.api }} \
-                ${{ steps.Backend.outputs.Auth }} \
-                ${{ steps.Backend.outputs.admin }} \
-                ${{ steps.Backend.outputs.Adminman }} \
-                ${{ steps.Backend.outputs.angular }} \
+          container : ${{ steps.Backend.outputs.api }} 
+                ${{ steps.Backend.outputs.Auth }} 
+                ${{ steps.Backend.outputs.admin }} 
+                ${{ steps.Backend.outputs.Adminman }} 
+                ${{ steps.Backend.outputs.angular }} 
     steps:
       - uses: actions/checkout@v2
       - name: Check for changes
