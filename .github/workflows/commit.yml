@@ -122,7 +122,7 @@ jobs:
               echo "::set-output name=backend::commited" 
               echo "::set-output name=templateman::templatemanager"
               continue
-            if [[ $directory == application/services/apigateway/* ]]; then
+            elif [[ $directory == application/services/apigateway/* ]]; then
               echo "::set-output name=backend::commited"
               echo "::set-output name=api::apigateway" 
               continue
