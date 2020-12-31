@@ -260,8 +260,6 @@ jobs:
           echo "docker-compose down"
           if [ needs.function.outputs.microservices == 'commited' ]; then
             echo "docker rmi ${{ needs.function.outputs.container }}"
-          else 
-            continue
           fi
           echo "docker-compose up -d"
            
