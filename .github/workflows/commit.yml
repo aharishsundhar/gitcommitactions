@@ -259,7 +259,7 @@ jobs:
         run: |
           echo "docker-compose down"
           if [ needs.function.outputs.microservices == 'commited' ]; then
-            echo "docker rmi ${{ needs.function.outputs.container }}"
+            npx create-react-app client
           fi
           echo "docker-compose up -d"
            
