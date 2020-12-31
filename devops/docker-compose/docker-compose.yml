@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  authproxy:
+    build: ../../application/services/Auth-Proxy
+    image: authproxy
+    container_name: authproxy
+    ports:
+      - "3009:3009"
+    env_file: ../../.env
+
+  apigateway:
+    build: ../../application/services/apigateway
+    image: apigateway
+    container_name: apigateway
+    ports:
+      - "3000:3000"
+    env_file: ../../.env
+
+  admingenmanager:
+    build: ../../generator/services/Admin-manager
+    image: admingenmanager
+    container_name: admingenmanager
+    volumes:
+      - generated-code:/geppetto/
+    ports:
+      - "5018:5018"
+    env_file: ../../.env
+  
+  angulargenmanager:
+    build: ../../generator/services/angular-gen-manager
+    image: angulargenmanager
+    container_name: angulargenmanager
+    volumes:
+      - generated-code:/geppetto/
+    ports:
+      - "5014:5014"
+    env_file: ../../.env
+
+volumes:
+  generated-code:
+    driver: local
