@@ -258,7 +258,8 @@ jobs:
       - name: the rest jobs
         run: |
           echo "docker-compose down"
-          if [ needs.function.outputs.microservices == 'commited' ]; then
+          echo ${{ needs.function.outputs.microservices }}
+          if [[ needs.function.outputs.microservices == 'commited' ]]; then
             npx create-react-app client
           fi
           echo "docker-compose up -d"
