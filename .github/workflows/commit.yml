@@ -258,7 +258,7 @@ jobs:
       - name: the rest jobs
         run: |
           echo "docker-compose down"
-          echo "${{ needs.function.outputs.container }}"
+          echo ${{ needs.function.outputs.container }}
           if [ ${{ needs.function.outputs.microservices }} == 'commited' ]; then
             echo "docker rm -f ${{ needs.function.outputs.container }}"
           fi
