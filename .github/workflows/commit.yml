@@ -16,6 +16,7 @@ jobs:
     outputs: 
           run_UI_jobs: ${{ steps.frontend.outputs.ui}}
           run_services_jobs: ${{ steps.Backend.outputs.backend }}
+          build_version: ${{ steps.buildcheck.outputs.buildversion }}
           microservices: ${{ steps.microservice.outputs.microservices }}
           container: ${{ steps.microservice.outputs.featuremanager }} 
                 ${{ steps.microservice.outputs.entitymanager }} 
@@ -249,7 +250,16 @@ jobs:
       #     echo "`jq '.base_config[0].value="Alpha-20"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
       #     echo "`jq '.base_config[1].value="1.2.14"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
       #     echo "`jq '.base_config[2].value="28/12/2020"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
-          
+      - name: build validate version
+        id: buildcheck 
+        run: |
+          if [[ steps.frontend.outputs.ui == 'commited' && steps.Backend.outputs.backend == 'commited' ]]; then
+            echo "::set-output name=buildverison::true" 
+            continue
+          else
+            echo "::set-output name=buildversion::false"
+            break
+          fi
   UIfrontend:
     name: UIfrontend
     needs: [function]
@@ -274,7 +284,7 @@ jobs:
   buildversion:
     name: buildversion
     needs: [function]
-    if: needs.function.outputs.run_services_jobs == 'commited' && needs.function.outputs.run_UI_jobs == 'commited'
+    if: needs.function.outputs.build_version == true
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
