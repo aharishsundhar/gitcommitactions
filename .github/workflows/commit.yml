@@ -7,6 +7,9 @@ on:
 env: 
   instance_running: "running"
   instance_stopped: "stopped"
+  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
+  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  aws-region: us-east-1
 jobs:
   function:
     runs-on: ubuntu-latest
@@ -46,6 +49,12 @@ jobs:
                 ${{ steps.microservice.outputs.ionicmanager }} 
                 ${{ steps.microservice.outputs.swaggergenmanager }} 
     steps:
+      - name: aws configuration
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.aws-access-key-id }}
+          aws-secret-access-key: ${{ env. aws-secret-access-key}}
+          aws-region: ${{env.aws-region}}
       - uses: actions/checkout@v2
       - name: Check for changes
         id: diff
@@ -261,5 +270,5 @@ jobs:
           if [ ${{ needs.function.outputs.microservices }} == 'commited' ]; then
             echo "docker rm -f ${{ needs.function.outputs.container }}"
           fi
-          echo "docker-compose up -d build"
+          echo "docker-compose up -d build" 
            
