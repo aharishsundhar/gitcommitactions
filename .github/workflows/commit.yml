@@ -253,7 +253,9 @@ jobs:
       - name: build validate version
         id: buildcheck 
         run: |
-          if [ ${{steps.frontend.outputs.ui}} == 'commited' && $ {{steps.Backend.outputs.backend}} == 'commited' ]; then
+          echo ${{steps.frontend.outputs.ui}}
+          echo ${{steps.Backend.outputs.backend}}
+          if [ ${{steps.frontend.outputs.ui}} == 'commited' && ${{steps.Backend.outputs.backend}} == 'commited' ]; then
             echo "::set-output name=buildverison::true" 
           else
             echo "::set-output name=buildversion::false"
@@ -282,7 +284,7 @@ jobs:
   buildversion:
     name: buildversion
     needs: [function]
-    if: needs.function.outputs.build_version == true
+    if: needs.function.outputs.build_version == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
