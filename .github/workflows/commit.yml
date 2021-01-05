@@ -253,12 +253,10 @@ jobs:
       - name: build validate version
         id: buildcheck 
         run: |
-          if [[ steps.frontend.outputs.ui == 'commited' && steps.Backend.outputs.backend == 'commited' ]]; then
+          if [ ${{steps.frontend.outputs.ui}} == 'commited' && $ {{steps.Backend.outputs.backend}} == 'commited' ]; then
             echo "::set-output name=buildverison::true" 
-            continue
           else
             echo "::set-output name=buildversion::false"
-            break
           fi
   UIfrontend:
     name: UIfrontend
