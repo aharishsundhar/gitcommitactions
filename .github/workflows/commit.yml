@@ -255,7 +255,7 @@ jobs:
         run: |
           echo ${{steps.frontend.outputs.ui}}
           echo ${{steps.Backend.outputs.backend}}
-          if [ ${{steps.frontend.outputs.ui}} == 'commited' && ${{steps.Backend.outputs.backend}} == 'commited' ]; then
+          if [[ ${{steps.frontend.outputs.ui}} == 'commited' || ${{steps.Backend.outputs.backend}} == 'commited' ]]; then
             echo "::set-output name=buildverison::true" 
           else
             echo "::set-output name=buildversion::false"
@@ -276,6 +276,7 @@ jobs:
     steps:
       - name: the rest jobs
         run: |
+          echo ${{ needs.function.outputs.build_version }}
           echo "docker-compose down"
           if [ ${{ needs.function.outputs.microservices }} == 'commited' ]; then
             echo "docker rm -f ${{ needs.function.outputs.container }}"
