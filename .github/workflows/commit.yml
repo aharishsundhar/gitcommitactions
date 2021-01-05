@@ -270,5 +270,14 @@ jobs:
           if [ ${{ needs.function.outputs.microservices }} == 'commited' ]; then
             echo "docker rm -f ${{ needs.function.outputs.container }}"
           fi
-          echo "docker-compose up -d build" 
+          echo "docker-compose up -d build"
+  buildversion:
+    name: UIfrontend
+    needs: [function]
+    if: needs.function.outputs.run_services_jobs == 'commited' && needs.function.outputs.run_UI_jobs == 'commited'
+    runs-on: ubuntu-latest
+    steps:
+      - name: the rest jobs
+        run: echo ${{ needs.function.outputs.run_UI_jobs }} 
+  
            
