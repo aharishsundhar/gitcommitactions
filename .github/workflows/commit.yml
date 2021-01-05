@@ -97,7 +97,7 @@ jobs:
             if [[ $directory != application/services/* && $directory != generator/services/*  ]]; then
               echo "::set-output name=backend::notcommited" 
               continue
-            elif [[ $directory != application/clients/desktop/* && $directory != application/services/* && $directory != generator/services/*  ]]; then
+            elif [[ $directory == application/clients/desktop/* && $directory == application/services/* && $directory == generator/services/*  ]]; then
               echo "::set-output name=buildversion::buildchanged" 
               continue
             else
