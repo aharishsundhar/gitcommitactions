@@ -16,7 +16,7 @@ jobs:
     outputs: 
           run_UI_jobs: ${{ steps.frontend.outputs.ui}}
           run_services_jobs: ${{ steps.Backend.outputs.backend }}
-          build_version: ${{ steps.Backend.outputs.buildversion }}
+          build_version: ${{ steps.buildcheck.outputs.buildversion }}
           microservices: ${{ steps.microservice.outputs.microservices }}
           container: ${{ steps.microservice.outputs.featuremanager }} 
                 ${{ steps.microservice.outputs.entitymanager }} 
@@ -96,9 +96,6 @@ jobs:
             directory="$( echo $path )"
             if [[ $directory != application/services/* && $directory != generator/services/*  ]]; then
               echo "::set-output name=backend::notcommited" 
-              continue
-            elif [[ $directory == application/clients/desktop/* && $directory == application/services/* && $directory == generator/services/*  ]]; then
-              echo "::set-output name=buildversion::buildchanged" 
               continue
             else
               echo "::set-output name=backend::commited"
@@ -258,7 +255,7 @@ jobs:
         run: |
           echo ${{steps.frontend.outputs.ui}}
           echo ${{steps.Backend.outputs.backend}}
-          if [[ ${{steps.frontend.outputs.ui}} == 'commited' || ${{steps.Backend.outputs.backend}} == 'commited' ]]; then
+          if [[ ${{steps.frontend.outputs.ui}} == 'commited' && ${{steps.Backend.outputs.backend}} == 'commited' ]]; then
             echo "::set-output name=buildverison::buildchanged" 
           else
             echo "::set-output name=buildversion::buildunchanged"
