@@ -261,5 +261,5 @@ jobs:
           if [ ${{ needs.function.outputs.microservices }} == 'commited' ]; then
             echo "docker rm -f ${{ needs.function.outputs.container }}"
           fi
-          echo "docker-compose up -d"
+          echo "docker-compose up -d build"
            
