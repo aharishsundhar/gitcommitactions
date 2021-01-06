@@ -250,16 +250,6 @@ jobs:
       #     echo "`jq '.base_config[0].value="Alpha-20"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
       #     echo "`jq '.base_config[1].value="1.2.14"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
       #     echo "`jq '.base_config[2].value="28/12/2020"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
-      - name: build validate version
-        id: buildcheck 
-        run: |
-          echo ${{steps.frontend.outputs.ui}}
-          echo ${{steps.Backend.outputs.backend}}
-          if [[ ${{steps.frontend.outputs.ui}} == 'commited' && ${{steps.Backend.outputs.backend}} == 'commited' ]]; then
-            echo "::set-output name=buildverison::buildchanged" 
-          else
-            echo "::set-output name=buildversion::buildunchanged"
-          fi
   UIfrontend:
     name: UIfrontend
     needs: [function]
@@ -286,11 +276,12 @@ jobs:
     name: buildversion
     needs: [function]
     if: |
-      needs.function.outputs.run_services_jobs == 'commited' ||
+      needs.function.outputs.run_services_jobs == 'commited' &&
       needs.function.outputs.run_UI_jobs == 'commited'
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
-        run: echo ${{ needs.function.outputs.run_UI_jobs }} 
+        run: echo ${{ needs.function.outputs.run_UI_jobs }}           
+ 
   
-           
+
