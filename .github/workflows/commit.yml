@@ -285,7 +285,9 @@ jobs:
   buildversion:
     name: buildversion
     needs: [function]
-    if: needs.function.outputs.build_version == 'buildchanged'
+    if: |
+      needs.function.outputs.run_services_jobs == 'commited' ||
+      needs.function.outputs.run_UI_jobs == 'commited'
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
