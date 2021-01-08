@@ -291,9 +291,10 @@ jobs:
   Instance_checking:
     name: instance check dev and stage 
     needs: [function]
+    runs-on: ubuntu-latest
     steps:
-      -name: printing env State
-       run: |
+      - name: printing env State
+        run: |
           echo ${{ env.bucket-dev }}
           echo ${{ env.instance-dev }}
           echo ${{ env.hosts-dev }}
