@@ -10,10 +10,18 @@ env:
   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   aws-region: us-east-1
+  bucket-dev: geppetto-dev
+  hosts-dev: ubuntu@ec2-34-197-46-177.compute-1.amazonaws.com
+  bucket-stage: geppetto-stage
+  hosts-stage: ubuntu@ec2-34-199-109-78.compute-1.amazonaws.com
 jobs:
   function:
     runs-on: ubuntu-latest
     outputs: 
+          branch: ${{ steps.ec2.outputs.short_ref }}
+          instance: ${{ steps.branch-commit.outputs.instance }}
+          hosts: ${{ steps.branch-commit.outputs.hosts }}
+          bucket: ${{ steps.branch-commit.outputs.bucket }}
           run_UI_jobs: ${{ steps.frontend.outputs.ui}}
           run_services_jobs: ${{ steps.Backend.outputs.backend }}
           build_version: ${{ steps.buildcheck.outputs.buildversion }}
@@ -56,6 +64,24 @@ jobs:
           aws-access-key-id: ${{ env.aws-access-key-id }}
           aws-secret-access-key: ${{ env. aws-secret-access-key}}
           aws-region: ${{env.aws-region}}
+      - name: Instance State
+        id: ec2
+        run: |
+          echo "::set-output name=instance-dev::$(aws ec2 describe-instances --instance-ids i-082c02e8aa3853a62 | jq '.Reservations[].Instances[].State.Name')"
+          echo "::set-output name=instance-stage::$(aws ec2 describe-instances --instance-ids i-09c99dd87883bc185 | jq '.Reservations[].Instances[].State.Name')"
+          echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+      - name: branch check dev and stage
+        id: branch-commit
+        run: |
+          if [ ${{steps.ec2.outputs.short_ref}} == 'main' ]; then
+            echo "::set-output name=instance::${{ steps.ec2.outputs.instance-dev }}" 
+            echo "::set-output name=hosts::ubuntu@ec2-34-197-46-177.compute-1.amazonaws.com"
+            echo "::set-output name=bucket::geppetto-dev"
+          elif [ ${{steps.ec2.outputs.short_ref}} == 'stage' ]; then
+            echo "::set-output name=instance::${{steps.ec2.outputs.instance-stage}}" 
+            echo "::set-output name=hosts::ubuntu@ec2-34-199-109-78.compute-1.amazonaws.com"
+            echo "::set-output name=bucket::geppetto-stage" 
+          fi 
       - uses: actions/checkout@v2
       - name: Check for changes
         id: diff
@@ -281,7 +307,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
-        run: echo ${{ needs.function.outputs.run_UI_jobs }}           
- 
-  
-
+        run: echo ${{ needs.function.outputs.run_UI_jobs }}  
+  Instance_checking:
+    name: instance check dev and stage 
+    needs: [function]
+    runs-on: ubuntu-latest
+    steps:
+      - name: printing env State
+        run: |
+          echo ${{ needs.function.outputs.instance }}
+          echo ${{ needs.function.outputs.hosts }}
+          echo ${{ needs.function.outputs.bucket }}
+      - name: Set output
+        id: vars
+        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+      - name: Check output
+        run: echo ${{ steps.vars.outputs.short_ref }}
