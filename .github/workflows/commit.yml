@@ -11,10 +11,6 @@ env:
   aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   aws-region: us-east-1
-  bucket-dev: geppetto-dev
-  hosts-dev: ubuntu@ec2-34-197-46-177.compute-1.amazonaws.com
-  bucket-stage: geppetto-stage
-  hosts-stage: ubuntu@ec2-34-199-109-78.compute-1.amazonaws.com
 jobs:
   function:
     runs-on: ubuntu-latest
@@ -114,7 +110,7 @@ jobs:
             fi
           done <<< "$FILE_DIFF"
       - name: Backend function to build
-        if: env.instance_running == 'running'
+        if: ${{ steps.branch-commit.outputs.instance }} == 'running'
         id: Backend
         run: |
           FILE_DIFF="${{ steps.diff.outputs.diff }}"
@@ -319,6 +315,13 @@ jobs:
           echo ${{ needs.function.outputs.instance }}
           echo ${{ needs.function.outputs.hosts }}
           echo ${{ needs.function.outputs.bucket }}
+      - name: Login into the dev instance by using SSH
+        uses: JimCronqvist/action-ssh@master
+        with:
+          hosts: ${{ needs.function.outputs.hosts }}
+          privateKey: ${{ secrets.PRIVATE_KEY }}
+          command: |
+                ls
       - name: Set output
         id: vars
         run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
