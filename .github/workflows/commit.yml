@@ -293,6 +293,12 @@ jobs:
     needs: [function]
     runs-on: ubuntu-latest
     steps:
+      - name: aws configuration
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.aws-access-key-id }}
+          aws-secret-access-key: ${{ env. aws-secret-access-key}}
+          aws-region: ${{env.aws-region}}
       - name: printing env State
         run: |
           echo ${{ env.bucket-dev }}
