@@ -11,10 +11,10 @@ env:
   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   aws-region: us-east-1
   bucket-dev: geppetto-dev
-  instance-dev: $(aws ec2 describe-instances --instance-ids i-082c02e8aa3853a62 | jq '.Reservations[].Instances[].State.Name')
+  instance-dev: aws ec2 describe-instances --instance-ids i-082c02e8aa3853a62 | jq '.Reservations[].Instances[].State.Name'
   hosts-dev: ubuntu@ec2-34-197-46-177.compute-1.amazonaws.com
   bucket-stage: geppetto-stage
-  instance-stage: $(aws ec2 describe-instances --instance-ids i-09c99dd87883bc185 | jq '.Reservations[].Instances[].State.Name')
+  instance-stage: aws ec2 describe-instances --instance-ids i-09c99dd87883bc185 | jq '.Reservations[].Instances[].State.Name'
   hosts-stage: ubuntu@ec2-34-199-109-78.compute-1.amazonaws.com
 jobs:
   function:
