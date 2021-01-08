@@ -293,11 +293,10 @@ jobs:
     needs: [function]
     steps:
       -name: printing env State
-      run: |
-        echo ${{ env.bucket-dev }}
-        echo ${{ env.instance-dev }}
-        echo ${{ env.hosts-dev }}
-        echo ${{ env.bucket-stage }}
-        echo ${{ env.instance-stage }}
-        echo ${{ env.hosts-stage }}
-
+       run: |
+          echo ${{ env.bucket-dev }}
+          echo ${{ env.instance-dev }}
+          echo ${{ env.hosts-dev }}
+          echo ${{ env.bucket-stage }}
+          echo ${{ env.instance-stage }}
+          echo ${{ env.hosts-stage }}
