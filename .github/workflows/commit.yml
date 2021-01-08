@@ -307,7 +307,6 @@ jobs:
           echo ${{ env.bucket-stage }}
           echo $(aws ec2 describe-instances --instance-ids i-09c99dd87883bc185  | jq '.Reservations[].Instances[].State.Name')
           echo ${{ env.hosts-stage }}
-      - uses: actions/checkout@v2
       - name: Set output
         id: vars
         run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
