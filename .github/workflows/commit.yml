@@ -296,8 +296,8 @@ jobs:
       - name: printing env State
         run: |
           echo ${{ env.bucket-dev }}
-          echo ${{ env.instance-dev }}
+          echo $(aws ec2 describe-instances --instance-ids i-082c02e8aa3853a62 | jq '.Reservations[].Instances[].State.Name')
           echo ${{ env.hosts-dev }}
           echo ${{ env.bucket-stage }}
-          echo ${{ env.instance-stage }}
+          echo $(aws ec2 describe-instances --instance-ids i-09c99dd87883bc185  | jq '.Reservations[].Instances[].State.Name')
           echo ${{ env.hosts-stage }}
