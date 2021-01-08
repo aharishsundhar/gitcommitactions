@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - stage
 env: 
   instance_running: "running"
   instance_stopped: "stopped"
