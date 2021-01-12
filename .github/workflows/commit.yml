@@ -261,6 +261,7 @@ jobs:
               echo "::set-output name=microservices::notcommited"
             fi
           done <<< "$FILE_DIFF"
+          
       # - uses: actions/checkout@v2
       # - uses: EndBug/add-and-commit@v6
       #   with: 
