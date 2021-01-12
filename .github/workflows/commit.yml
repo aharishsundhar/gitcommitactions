@@ -1,39 +1,329 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# This workflow will install Deno and run tests across stable and nightly builds on Windows, Ubuntu and macOS.
-# For more information see: https://github.com/denolib/setup-deno
-
-name: commit
-
+name: 'Commit Message Check'
 on:
+  
   push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-
+    branches:
+      - main
+      - stage
+env: 
+  instance_running: "running"
+  instance_stopped: "stopped"
+  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID}}
+  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  aws-region: us-east-1
 jobs:
-  test:
-    runs-on: ${{ matrix.os }} # runs a test on Ubuntu, Windows and macOS
-
-    strategy:
-      matrix:
-        deno: ["v1.x", "nightly"]
-        os: [macOS-latest, windows-latest, ubuntu-latest]
-
+  function:
+    runs-on: ubuntu-latest
+    outputs: 
+          branch: ${{ steps.ec2.outputs.short_ref }}
+          instance: ${{ steps.branch-commit.outputs.instance }}
+          hosts: ${{ steps.branch-commit.outputs.hosts }}
+          bucket: ${{ steps.branch-commit.outputs.bucket }}
+          run_UI_jobs: ${{ steps.frontend.outputs.ui}}
+          run_services_jobs: ${{ steps.Backend.outputs.backend }}
+          build_version: ${{ steps.buildcheck.outputs.buildversion }}
+          microservices: ${{ steps.microservice.outputs.microservices }}
+          container: ${{ steps.microservice.outputs.featuremanager }} 
+                ${{ steps.microservice.outputs.entitymanager }} 
+                ${{ steps.microservice.outputs.flowmanager }} 
+                ${{ steps.microservice.outputs.microflowmanager }} 
+                ${{ steps.microservice.outputs.menubuildermanager }}
+                ${{ steps.microservice.outputs.screemanager }} 
+                ${{ steps.microservice.outputs.securitymanager }} 
+                ${{ steps.microservice.outputs.camundasvc }} 
+                ${{ steps.microservice.outputs.Authproxy }}
+                ${{ steps.microservice.outputs.templatemanager }} 
+                ${{ steps.microservice.outputs.apigateway }} 
+                ${{ steps.microservice.outputs.projectmanager }} 
+                ${{ steps.microservice.outputs.deletemanager }}
+                ${{ steps.microservice.outputs.githubmanager }} 
+                ${{ steps.microservice.outputs.screengenmanager }} 
+                ${{ steps.microservice.outputs.mongogenmanager }}
+                ${{ steps.microservice.outputs.admingenmanager }}
+                ${{ steps.microservice.outputs.nodegenmanager }}
+                ${{ steps.microservice.outputs.datastoremanager }} 
+                ${{ steps.microservice.outputs.inframanager }} 
+                ${{ steps.microservice.outputs.generationmanager }} 
+                ${{ steps.microservice.outputs.frontgenmanager }}
+                ${{ steps.microservice.outputs.backendgenmanager }} 
+                ${{ steps.microservice.outputs.angulargenmanager }} 
+                ${{ steps.microservice.outputs.angtemplatemanager }} 
+                ${{ steps.microservice.outputs.reactgenmanager }}
+                ${{ steps.microservice.outputs.configmanager }} 
+                ${{ steps.microservice.outputs.authgenmanager }}
+                ${{ steps.microservice.outputs.codegenmanager }} 
+                ${{ steps.microservice.outputs.ionicmanager }} 
+                ${{ steps.microservice.outputs.swaggergenmanager }} 
     steps:
-      - name: Setup repo
-        uses: actions/checkout@v2
-
-      - name: Setup Deno
-        uses: denolib/setup-deno@c7d7968ad4a59c159a777f79adddad6872ee8d96
+      - name: aws configuration
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          deno-version: ${{ matrix.deno }} # tests across multiple Deno versions
-
-      - name: Cache Dependencies
-        run: deno cache deps.ts
-
-      - name: Run Tests
-        run: deno test -A --unstable
+          aws-access-key-id: ${{ env.aws-access-key-id }}
+          aws-secret-access-key: ${{ env. aws-secret-access-key}}
+          aws-region: ${{env.aws-region}}
+      - name: Instance State
+        id: ec2
+        run: |
+          echo "::set-output name=instance-dev::$(aws ec2 describe-instances --instance-ids i-082c02e8aa3853a62 | jq '.Reservations[].Instances[].State.Name')"
+          echo "::set-output name=instance-stage::$(aws ec2 describe-instances --instance-ids i-09c99dd87883bc185 | jq '.Reservations[].Instances[].State.Name')"
+          echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+      - name: branch check dev and stage
+        id: branch-commit
+        run: |
+          if [ ${{steps.ec2.outputs.short_ref}} == 'main' ]; then
+            echo "::set-output name=instance::${{ steps.ec2.outputs.instance-dev }}" 
+            echo "::set-output name=hosts::ubuntu@ec2-34-197-46-177.compute-1.amazonaws.com"
+            echo "::set-output name=bucket::geppetto-dev"
+          elif [ ${{steps.ec2.outputs.short_ref}} == 'stage' ]; then
+            echo "::set-output name=instance::${{steps.ec2.outputs.instance-stage}}" 
+            echo "::set-output name=hosts::ubuntu@ec2-34-199-109-78.compute-1.amazonaws.com"
+            echo "::set-output name=bucket::geppetto-stage" 
+          fi 
+      - uses: actions/checkout@v2
+      - name: Check for changes
+        id: diff
+        run: |
+          if [ $GITHUB_BASE_REF ]; then
+            git fetch origin $GITHUB_BASE_REF --depth=1
+            export FILE_DIFF=$( git diff --name-only origin/$GITHUB_BASE_REF $GITHUB_SHA )
+            echo "Diff between origin/$GITHUB_BASE_REF and $GITHUB_SHA"
+          else
+            git fetch origin ${{ github.event.before }} --depth=1
+            export FILE_DIFF=$( git diff --name-only ${{ github.event.before }} $GITHUB_SHA )
+            echo "Diff between ${{ github.event.before }} and $GITHUB_SHA"
+          fi
+          echo "$FILE_DIFF"
+          echo "::set-output name=diff::$( echo "$FILE_DIFF" | sed ':a;N;$!ba;s/\n/%0A/g' )"
+      - name: UI to build function
+        id: frontend
+        run: |
+          FILE_DIFF="${{ steps.diff.outputs.diff }}"
+          while read path;
+          do
+            directory="$( echo $path )"
+            if [[ $directory != application/clients/desktop/* ]]; then
+              echo "::set-output name=ui::notcommited" 
+              continue
+            else
+              echo "::set-output name=ui::commited"
+              break
+            fi
+          done <<< "$FILE_DIFF"
+      - name: Backend function to build
+        if: ${{ steps.branch-commit.outputs.instance }} == 'running'
+        id: Backend
+        run: |
+          FILE_DIFF="${{ steps.diff.outputs.diff }}"
+          while read path;
+          do
+            directory="$( echo $path )"
+            if [[ $directory != application/services/* && $directory != generator/services/*  ]]; then
+              echo "::set-output name=backend::notcommited" 
+              continue
+            else
+              echo "::set-output name=backend::commited"
+              break
+            fi
+          done <<< "$FILE_DIFF"
+      - name: Microservices to check run
+        if: steps.Backend.outputs.backend == 'commited'
+        id: microservice
+        run: |
+          FILE_DIFF="${{ steps.diff.outputs.diff }}"
+          while read path;
+          do
+            directory="$( echo $path )"
+            if [[ $directory == application/services/featuremanager/* ]]; then
+              echo "::set-output name=microservices::commited" 
+              echo "::set-output name=featuremanager::featuremanager"
+              continue
+            elif [[ $directory == application/services/entitymanager/* ]]; then
+              echo "::set-output name=microservices::commited" 
+              echo "::set-output name=entitymanager::entitymanager"
+              continue
+            elif [[ $directory == application/services/flowmanager/* ]]; then
+              echo "::set-output name=microservices::commited" 
+              echo "::set-output name=flowmanager::flowmanager"
+              continue
+            elif [[ $directory == application/services/microflowmanager/* ]]; then
+              echo "::set-output name=bacmicroserviceskend::commited" 
+              echo "::set-output name=microflowmanager::microflowmanager"
+              continue
+            elif [[ $directory == application/services/menubuildermanager/* ]]; then
+              echo "::set-output name=microservices::commited" 
+              echo "::set-output name=menubuildermanager::menubuildermanager"
+              continue
+            elif [[ $directory == application/services/screenmanager/* ]]; then
+              echo "::set-output name=microservices::commited" 
+              echo "::set-output name=screenmanager::screenmanager"
+              continue
+            elif [[ $directory == application/services/securitymanager/* ]]; then
+              echo "::set-output name=microservices::commited" 
+              echo "::set-output name=securitymanager::securitymanager"
+              continue
+            elif [[ $directory == application/services/Camunda/* ]]; then
+              echo "::set-output name=microservices::commited" 
+              echo "::set-output name=camundasvc::camundasvc"
+              continue
+            elif [[ $directory == application/services/Auth-Proxy/* ]]; then
+              echo "::set-output name=microservices::commited" 
+              echo "::set-output name=Authproxy::authproxy"
+              continue
+            elif [[ $directory == application/services/templatemanager/* ]]; then
+              echo "::set-output name=microservices::commited" 
+              echo "::set-output name=templatemanager::templatemanager"
+              continue
+            elif [[ $directory == application/services/apigateway/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=apigateway::apigateway" 
+              continue
+            elif [[ $directory == application/services/projectmanager/* ]]; then
+              echo "::set-output name=microservices::commited" 
+              echo "::set-output name=projectmanager::projectmanager"
+              continue
+            elif [[ $directory == application/services/deletemanager/* ]]; then
+              echo "::set-output name=microservices::commited" 
+              echo "::set-output name=deletemanager::deletemanager"
+              continue
+            elif [[ $directory == generator/services/github-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=githubmanager::githubmanager" 
+              continue
+            elif [[ $directory == generator/services/screen-gen-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=screengenmanager::angulargenmanager" 
+              continue
+            elif [[ $directory == generator/services/mongo-gen-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=mongogenmanager::mongogenmanager" 
+              continue
+            elif [[ $directory == generator/services/Admin-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=admingenmanager::admingenmanger" 
+              continue
+            elif [[ $directory == generator/services/node-gen-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=nodegenmanager::nodegenmanager" 
+              continue
+            elif [[ $directory == generator/services/datastore-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=datastoremanager::datastoremanager" 
+              continue
+            elif [[ $directory == generator/services/infrastructure-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=inframanager::inframanager" 
+              continue
+            elif [[ $directory == generator/services/generation-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=generationmanager::generationmanager" 
+              continue
+            elif [[ $directory == generator/services/frontend-gen-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=frontgenmanager::frontgenmanager" 
+              continue
+            elif [[ $directory == generator/services/backend-gen-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=backendgenmanager::backendgenmanager" 
+              continue
+            elif [[ $directory == generator/services/angular-gen-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=angulargenmanager::angulargenmanager" 
+              continue
+            elif [[ $directory == generator/services/angular-template-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=angtemplatemanager::angtemplatemanager" 
+              continue
+            elif [[ $directory == generator/services/reactv16-gen-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=reactgenmanager::reactgenmanager" 
+              continue
+            elif [[ $directory == generator/services/configurationmanager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=configmanager::configmanager" 
+              continue
+            elif [[ $directory == generator/services/auth-gen-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=authgenmanager::authgenmanager" 
+              continue
+            elif [[ $directory == generator/services/code-gen-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=codegenmanager::codegenmanager" 
+              continue
+            elif [[ $directory == generator/services/ionic-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=ionicmanager::ionicmanager" 
+              continue
+            elif [[ $directory == generator/services/swagger-gen-manager/* ]]; then
+              echo "::set-output name=microservices::commited"
+              echo "::set-output name=swaggergenmanager::swaggergenmanager" 
+              continue
+            else
+              echo "::set-output name=microservices::notcommited"
+            fi
+          done <<< "$FILE_DIFF"
+      # - uses: actions/checkout@v2
+      # - uses: EndBug/add-and-commit@v6
+      #   with: 
+      #     path: './generator/services/configurationmanager/src/assests/'
+      #     message: 'Add the version and date'
+      #     add: '*.json --force'
+      #     cwd: './generator/services/configurationmanager/src/assests/'  
+      #     token: ${{ secrets.TOKEN }}
+      # - run: |
+      #     echo "`jq '.base_config[0].value="Alpha-20"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
+      #     echo "`jq '.base_config[1].value="1.2.14"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
+      #     echo "`jq '.base_config[2].value="28/12/2020"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
+  UIfrontend:
+    name: UIfrontend
+    needs: [function]
+    if: needs.function.outputs.run_UI_jobs == 'commited'
+    runs-on: ubuntu-latest
+    steps:
+      - name: the rest jobs
+        run: echo ${{ needs.function.outputs.run_UI_jobs }}
+  services:
+    name: Services
+    needs: [function]
+    if: needs.function.outputs.run_services_jobs == 'commited'
+    runs-on: ubuntu-latest
+    steps:
+      - name: the rest jobs
+        run: |
+          echo ${{ needs.function.outputs.build_version }}
+          echo "docker-compose down"
+          if [ ${{ needs.function.outputs.microservices }} == 'commited' ]; then
+            echo "docker rm -f ${{ needs.function.outputs.container }}"
+          fi
+          echo "docker-compose up -d build"
+  buildversion:
+    name: buildversion
+    needs: [function]
+    if: |
+      needs.function.outputs.run_services_jobs == 'commited' ||
+      needs.function.outputs.run_UI_jobs == 'commited'
+    runs-on: ubuntu-latest
+    steps:
+      - name: the rest jobs
+        run: echo ${{ needs.function.outputs.run_UI_jobs }}  
+  Instance_checking:
+    name: instance check dev and stage 
+    needs: [function]
+    runs-on: ubuntu-latest
+    steps:
+      - name: printing env State
+        run: |
+          echo ${{ needs.function.outputs.instance }}
+          echo ${{ needs.function.outputs.hosts }}
+          echo ${{ needs.function.outputs.bucket }}
+      - name: Login into the dev instance by using SSH
+        uses: JimCronqvist/action-ssh@master
+        with:
+          hosts: ${{ needs.function.outputs.hosts }}
+          privateKey: ${{ secrets.PRIVATE_KEY }}
+          command: |
+                ls
+      - name: Set output
+        id: vars
+        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
+      - name: Check output
+        run: echo ${{ steps.vars.outputs.short_ref }}
