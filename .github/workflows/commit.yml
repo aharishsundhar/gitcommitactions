@@ -285,7 +285,7 @@ jobs:
       - name: the rest jobs
         run: |
           echo ${{ needs.function.outputs.run_UI_jobs }}
-          echo git pull git@github.com:dan-castillo/geppettotest.git -b  ${{ steps.function.outputs.branch }}
+          echo git pull git@github.com:dan-castillo/geppettotest.git -b  ${{ needs.function.outputs.branch }}
   services:
     name: Services
     needs: [function]
