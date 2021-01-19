@@ -276,16 +276,6 @@ jobs:
       #     echo "`jq '.base_config[0].value="Alpha-20"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
       #     echo "`jq '.base_config[1].value="1.2.14"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
       #     echo "`jq '.base_config[2].value="28/12/2020"' configuration.json`" > ./generator/services/configurationmanager/src/assests/configuration.json
-  UIfrontend:
-    name: UIfrontend
-    needs: [function]
-    if: needs.function.outputs.run_UI_jobs == 'commited'
-    runs-on: ubuntu-latest
-    steps:
-      - name: the rest jobs
-        run: |
-          echo ${{ needs.function.outputs.run_UI_jobs }}
-          echo git pull git@github.com:dan-castillo/geppettotest.git -b  ${{ needs.function.outputs.branch }}
   services:
     name: Services
     needs: [function]
@@ -300,6 +290,27 @@ jobs:
             echo "docker rm -f ${{ needs.function.outputs.container }}"
           fi
           echo "docker-compose up -d build"
+      - name: Login into the dev instance by using SSH
+        uses: JimCronqvist/action-ssh@master
+        with:
+          hosts: ${{ needs.function.outputs.hosts }}
+          privateKey: ${{ secrets.PRIVATE_KEY }}
+          command: |
+                ls
+  UIfrontend:
+    name: UIfrontend
+    needs: [function]
+    if: needs.function.outputs.run_UI_jobs == 'commited'
+    runs-on: ubuntu-latest
+    steps:
+      - name: the rest jobs
+        run: |
+          echo ${{ needs.function.outputs.run_UI_jobs }}
+      - name: Installing node modules
+        working-directory: ./application/clients/desktop
+        run: |
+            ls
+            git branch
   buildversion:
     name: buildversion
     needs: [function]
