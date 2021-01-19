@@ -283,7 +283,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: the rest jobs
-        run: echo ${{ needs.function.outputs.run_UI_jobs }}
+        run: |
+          echo ${{ needs.function.outputs.run_UI_jobs }}
+          echo git pull git@github.com:dan-castillo/geppettotest.git -b  ${{ needs.function.outputs.branch }}
   services:
     name: Services
     needs: [function]
