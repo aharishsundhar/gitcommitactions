@@ -311,6 +311,7 @@ jobs:
         run: |
             ls
             git branch
+            
   buildversion:
     name: buildversion
     needs: [function]
