@@ -15,6 +15,7 @@ jobs:
   function:
     runs-on: ubuntu-latest
     outputs: 
+          configuration: ${{ steps.branch-commit.outputs.configuration }}
           branch: ${{ steps.ec2.outputs.short_ref }}
           instance: ${{ steps.branch-commit.outputs.instance }}
           hosts: ${{ steps.branch-commit.outputs.hosts }}
@@ -74,10 +75,12 @@ jobs:
             echo "::set-output name=instance::${{ steps.ec2.outputs.instance-dev }}" 
             echo "::set-output name=hosts::ubuntu@ec2-34-197-46-177.compute-1.amazonaws.com"
             echo "::set-output name=bucket::geppetto-dev"
+            echo "::set-output name=configuration::devops"
           elif [ ${{steps.ec2.outputs.short_ref}} == 'stage' ]; then
             echo "::set-output name=instance::${{steps.ec2.outputs.instance-stage}}" 
             echo "::set-output name=hosts::ubuntu@ec2-34-199-109-78.compute-1.amazonaws.com"
-            echo "::set-output name=bucket::geppetto-stage" 
+            echo "::set-output name=bucket::geppetto-stage"
+            echo "::set-output name=configuration::production" 
           fi 
       - name:  Status of Instance 
         run: |
@@ -316,6 +319,7 @@ jobs:
         working-directory: ./application/clients/desktop
         run: |
             git branch 
+            echo ng build --configuration=${{ needs.function.outputs.configuration }}
   buildversion:
     name: buildversion
     needs: [function]
