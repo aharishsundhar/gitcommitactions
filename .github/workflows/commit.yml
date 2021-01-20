@@ -306,12 +306,16 @@ jobs:
       - name: the rest jobs
         run: |
           echo ${{ needs.function.outputs.run_UI_jobs }}
+      - name: Check the  branch
+        uses: actions/checkout@v2
+      - name: Installing the Node and its dependencies
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10
       - name: Installing node modules
         working-directory: ./application/clients/desktop
         run: |
-            ls
-            git branch
-            
+            git branch 
   buildversion:
     name: buildversion
     needs: [function]
